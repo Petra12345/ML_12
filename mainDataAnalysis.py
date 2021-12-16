@@ -33,8 +33,10 @@ print(data_without_columns_missing)
 #data_without_columns_missing.to_excel("data_without_columns_missing.xlsx")
 # %%
 
-
 # Means
+print(data_without_columns_missing.select_dtypes('int').agg(['count','min', 'max','mad','mean','median','quantile','kurt','skew','var','std']))
+data_descriptives_int = data_without_columns_missing.select_dtypes('int').agg(['count','min', 'max','mad','mean','median','quantile','kurt','skew','var','std'])
+data_descriptives_int.to_excel("data_descriptives_int.xlsx")
 
 # Split numerical and categorical data
 
