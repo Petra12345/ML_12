@@ -9,6 +9,17 @@ df = pd.read_excel('Data/application_data_small.xlsx')
 # pd.set_option('display.max_columns', None)
 # df.describe()
 
+# Transform data: make numeric
+df["FLAG_OWN_CAR"] = df["FLAG_OWN_CAR"].replace(['Y', 'N'], [1, 0])
+df["FLAG_OWN_REALTY"] = df["FLAG_OWN_REALTY"].replace(['Y', 'N'], [1, 0])
+df["EMERGENCYSTATE_MODE"] = df["EMERGENCYSTATE_MODE"].replace(['Yes', 'No'], [1, 0])
+
+for column in df:
+    if df[column].dtype == object:
+        df[column] = df[column].replace(df[column].unique().tolist(), [*range(1, len(df[column].unique())+1)])
+
+
+
 # %%
 # Missing values percentages percentage
 count_missing_per = df.isnull().sum()
@@ -16,6 +27,8 @@ count_missing_per.describe()
 count_missing_per = count_missing_per.div(len(df))
 #print(count_missing_per)
 #count_missing_per.to_excel("count_missing_per.xlsx")
+
+# make data numeric
 
 # Test if NaN
 # Cut-off
@@ -35,8 +48,8 @@ print(data_without_columns_missing)
 
 # Means
 print(data_without_columns_missing.select_dtypes('int').agg(['count','min', 'max','mad','mean','median','quantile','kurt','skew','var','std']))
-data_descriptives_int = data_without_columns_missing.select_dtypes('int').agg(['count','min', 'max','mad','mean','median','quantile','kurt','skew','var','std'])
-data_descriptives_int.to_excel("data_descriptives_int.xlsx")
+data_descriptives = data_without_columns_missing.select_dtypes('int').agg(['count','min', 'max','mad','mean','median','quantile','kurt','skew','var','std'])
+data_descriptives.to_excel("data_descriptives.xlsx")
 
 # Split numerical and categorical data
 
