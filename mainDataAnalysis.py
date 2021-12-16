@@ -38,6 +38,7 @@ print(data_without_columns_missing)
 
 # Split numerical and categorical data
 
+
 # How to deal with categorical values?
 # Where does it make sense to take means?
 
