@@ -10,9 +10,29 @@ df_raw = pd.read_excel('Data/application_data_small.xlsx')
 df = df_raw
 print(df)
 
+# pd.set_option('display.max_rows', None)
+# print(df.dtypes)
+# pd.set_option('display.max_rows', 10)
+
+## HANDY CODE:
+# df["NAME_TYPE_SUITE"].value_counts()
+
+# Transform data: make numeric
+df["FLAG_OWN_CAR"] = df["FLAG_OWN_CAR"].replace(['Y', 'N'], [1, 0])
+df["FLAG_OWN_REALTY"] = df["FLAG_OWN_REALTY"].replace(['Y', 'N'], [1, 0])
+df["EMERGENCYSTATE_MODE"] = df["EMERGENCYSTATE_MODE"].replace(['Yes', 'No'], [1, 0])
+
+for column in df:
+    if df[column].dtype == object:
+        df[column] = df[column].replace(df[column].unique().tolist(), [*range(1, len(df[column].unique())+1)])
+
+pd.set_option('display.max_rows', None)
+print(df.dtypes)
+pd.set_option('display.max_rows', 10)
+
 # %%
-pd.set_option('display.max_columns', None)
-df.describe()
+# pd.set_option('display.max_columns', None)
+# df.describe()
 
 print("printing targets...")
 target = df["TARGET"]
