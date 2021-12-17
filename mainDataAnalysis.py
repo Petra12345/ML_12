@@ -1,6 +1,7 @@
 ## Import packages
 import pandas as pd
-
+import numpy
+import matplotlib.pyplot as plt
 # %%
 df = pd.read_excel('Data/application_data_small.xlsx')
 #print(df)
@@ -46,23 +47,30 @@ print(data_without_columns_missing)
 #data_without_columns_missing.to_excel("data_without_columns_missing.xlsx")
 # %%
 
-# Means
-print(data_without_columns_missing.select_dtypes('int').agg(['count','min', 'max','mad','mean','median','quantile','kurt','skew','var','std']))
-data_descriptives = data_without_columns_missing.select_dtypes('int').agg(['count','min', 'max','mad','mean','median','quantile','kurt','skew','var','std'])
+# Means, variances, etc.
+data_descriptives = data_without_columns_missing.select_dtypes('number').agg(['count','min', 'max','mad','mean','median','var','std'])
 data_descriptives.to_excel("data_descriptives.xlsx")
+print(data_descriptives)
 
-# Split numerical and categorical data
+# Histogram of numerical data
+data_without_columns_missing.select_dtypes('number').hist(figsize=(24,24), ec='w')
+plt.show()
 
 
 # How to deal with categorical values?
 # Where does it make sense to take means?
-
-# SD's
 # Percentages per category
-# Where does it make sense to use SD's?
+
 
 
 # %%
 # How to handle missing values?
+
+# Categorical: fill in with mode --> most appearing value
+
+# Numerical float: interpolate linearly
+
+# Numerical Integer: Dropping?
+
 
 # %% Correlation
