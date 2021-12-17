@@ -1,6 +1,7 @@
 ## Import packages
 import pandas as pd
-
+import numpy
+import matplotlib.pyplot as plt
 # %%
 df = pd.read_excel('Data/application_data_small.xlsx')
 #print(df)
@@ -9,6 +10,17 @@ df = pd.read_excel('Data/application_data_small.xlsx')
 # pd.set_option('display.max_columns', None)
 # df.describe()
 
+# Transform data: make numeric
+df["FLAG_OWN_CAR"] = df["FLAG_OWN_CAR"].replace(['Y', 'N'], [1, 0])
+df["FLAG_OWN_REALTY"] = df["FLAG_OWN_REALTY"].replace(['Y', 'N'], [1, 0])
+df["EMERGENCYSTATE_MODE"] = df["EMERGENCYSTATE_MODE"].replace(['Yes', 'No'], [1, 0])
+
+for column in df:
+    if df[column].dtype == object:
+        df[column] = df[column].replace(df[column].unique().tolist(), [*range(1, len(df[column].unique())+1)])
+
+
+
 # %%
 # Missing values percentages percentage
 count_missing_per = df.isnull().sum()
@@ -16,6 +28,8 @@ count_missing_per.describe()
 count_missing_per = count_missing_per.div(len(df))
 #print(count_missing_per)
 #count_missing_per.to_excel("count_missing_per.xlsx")
+
+# make data numeric
 
 # Test if NaN
 # Cut-off
@@ -33,20 +47,30 @@ print(data_without_columns_missing)
 #data_without_columns_missing.to_excel("data_without_columns_missing.xlsx")
 # %%
 
+# Means, variances, etc.
+data_descriptives = data_without_columns_missing.select_dtypes('number').agg(['count','min', 'max','mad','mean','median','var','std'])
+data_descriptives.to_excel("data_descriptives.xlsx")
+print(data_descriptives)
 
-# Means
+# Histogram of numerical data
+data_without_columns_missing.select_dtypes('number').hist(figsize=(24,24), ec='w')
+plt.show()
 
-# Split numerical and categorical data
 
 # How to deal with categorical values?
 # Where does it make sense to take means?
-
-# SD's
 # Percentages per category
-# Where does it make sense to use SD's?
+
 
 
 # %%
 # How to handle missing values?
+
+# Categorical: fill in with mode --> most appearing value
+
+# Numerical float: interpolate linearly
+
+# Numerical Integer: Dropping?
+
 
 # %% Correlation
