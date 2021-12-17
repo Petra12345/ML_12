@@ -2,6 +2,9 @@
 import pandas as pd
 import numpy
 import matplotlib.pyplot as plt
+from sklearn.experimental import enable_iterative_imputer
+from sklearn.impute import IterativeImputer
+
 # %%
 df = pd.read_excel('Data/application_data_small.xlsx')
 #print(df)
@@ -18,7 +21,6 @@ df["EMERGENCYSTATE_MODE"] = df["EMERGENCYSTATE_MODE"].replace(['Yes', 'No'], [1,
 for column in df:
     if df[column].dtype == object:
         df[column] = df[column].replace(df[column].unique().tolist(), [*range(1, len(df[column].unique())+1)])
-
 
 
 # %%
@@ -47,7 +49,7 @@ print(data_without_columns_missing)
 #data_without_columns_missing.to_excel("data_without_columns_missing.xlsx")
 # %%
 
-# Means, variances, etc.
+# Means, variances, etc. of numerical data
 data_descriptives = data_without_columns_missing.select_dtypes('number').agg(['count','min', 'max','mad','mean','median','var','std'])
 data_descriptives.to_excel("data_descriptives.xlsx")
 print(data_descriptives)
@@ -64,12 +66,12 @@ plt.show()
 
 
 # %%
-# How to handle missing values?
+# How to handle missing values? MICE
+
+# Make categorical data into
 
 # Categorical: fill in with mode --> most appearing value
-
 # Numerical float: interpolate linearly
-
 # Numerical Integer: Dropping?
 
 
