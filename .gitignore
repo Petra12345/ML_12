@@ -131,3 +131,4 @@ dmypy.json
 # Mac files
 .DS_Store
 
+/Data/application_data/application_data.csv
