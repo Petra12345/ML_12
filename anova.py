@@ -5,11 +5,14 @@ from sklearn import feature_selection, linear_model, metrics, model_selection
 import seaborn as sns
 import matplotlib.pyplot as plt
 from imblearn import over_sampling
+from sklearn.experimental import enable_iterative_imputer
+from sklearn.impute import IterativeImputer
+import time
 
 
 # pd.set_option('display.max_rows', None)
 # print(df.dtypes)
-# pd.set_option('display.max_rows', 10)
+# pd.set_option('display.max_rows', 10)-
 
 
 def remove_columns_missing_values(df):
@@ -27,9 +30,48 @@ def remove_columns_missing_values(df):
     return data_without_columns_missing
 
 
-
 def remove_rows_with_missing_values(df):
     return df[df.notnull().all(axis=1)]
+
+
+def apply_MICE(df):
+    start = time.time()
+    labels = df.columns.tolist()
+    imp_median = IterativeImputer(max_iter=10, tol=0.001, n_nearest_features=10, initial_strategy='median',
+                                  skip_complete=False, verbose=2, add_indicator=False)
+    imp_mode = IterativeImputer(max_iter=10, tol=0.001, n_nearest_features=10, initial_strategy='most_frequent',
+                                skip_complete=False, verbose=2, add_indicator=False)
+    # MICE to impute missing float data
+    data_mice_float = df.select_dtypes("float")
+    float_labels = data_mice_float.columns.tolist()
+    data_mice_float = imp_median.fit_transform(data_mice_float)
+    data_mice_float = pd.DataFrame(data=data_mice_float)
+    data_mice_float = data_mice_float.set_axis(float_labels, axis=1, inplace=False)
+    # MICE to impute missing categorical data
+    data_mice_cat = df.select_dtypes(exclude="float")
+    cat_labels = data_mice_cat.columns.tolist()
+    data_mice_cat = imp_mode.fit_transform(data_mice_cat)
+    data_mice_cat = pd.DataFrame(data=data_mice_cat)
+    data_mice_cat = data_mice_cat.set_axis(cat_labels, axis=1, inplace=False)
+    data_mice = pd.concat([data_mice_cat, data_mice_float], axis=1)
+    # Order according to "old" column order
+    data_mice = data_mice.reindex(columns=labels)
+
+    print("Time taken: " + str(time.time() - start) + "\n\n")
+
+    return data_mice
+
+
+def replace_nans_with_mode(df):
+    for column in df:
+        print("Replace " + str(df[column].isnull().sum()) + " nans for " + column, end="\n")
+        if df[column].dtype == float:
+            df[column] = df[column].fillna(df[column].median())
+        else:
+            df[column] = df[column].fillna(df[column].mode().iloc[0])
+
+    # df.fillna(df.mode().iloc[0])
+    return df
 
 
 # loading dataset
