@@ -22,7 +22,6 @@ for column in df:
     if df[column].dtype == object:
         df[column] = df[column].replace(df[column].unique().tolist(), [*range(1, len(df[column].unique())+1)])
 
-
 # %%
 # Missing values percentages percentage
 count_missing_per = df.isnull().sum()
