@@ -63,7 +63,18 @@ plt.show()
 # Where does it make sense to take means?
 # Percentages per category
 
+# MICE
+imp_median = IterativeImputer(max_iter=10, tol=0.001, n_nearest_features=10, initial_strategy='most_frequent', skip_complete=False, verbose=2, add_indicator=False)
+data_first_try_mice = imp_median.fit_transform(data_without_columns_missing)
+data_first_try_mice = pd.DataFrame(data=data_first_try_mice)
+data_first_try_mice.to_excel("data_first_try_mice.xlsx")
 
+
+# Means, variances, etc. of numerical data
+data_descriptives_after_MICE = data_first_try_mice.select_dtypes('number').agg(['count','min', 'max','mad','mean','median','var','std'])
+data_descriptives_after_MICE.to_excel("data_descriptives_after_MICE.xlsx")
+subtraction_descriptives = data_descriptives_after_MICE.sub(data_descriptives, axis = 0)
+subtraction_descriptives.to_excel("data_descriptives_diff.xlsx")
 
 # %%
 # How to handle missing values? MICE
