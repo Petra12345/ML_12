@@ -58,7 +58,6 @@ plt.show()
 # MICE to impute missing float data
 imp_median = IterativeImputer(max_iter=10, tol=0.001, n_nearest_features=10, initial_strategy='median', skip_complete=False, verbose=2, add_indicator=False)
 data_mice_float = data_without_columns_missing.select_dtypes("float")
-print(data_mice_float)
 float_labels = data_mice_float.columns.tolist()
 data_mice_fl = imp_median.fit_transform(data_mice_float)
 data_mice_fl = pd.DataFrame(data=data_mice_fl)
@@ -66,16 +65,11 @@ data_mice_fl = data_mice_fl.set_axis(float_labels, axis=1, inplace=False)
 # MICE to impute missing categorical data
 imp_mode = IterativeImputer(max_iter=10, tol=0.001, n_nearest_features=10, initial_strategy='most_frequent', skip_complete=False, verbose=2, add_indicator=False)
 data_mice_cat = data_without_columns_missing.select_dtypes(exclude="float")
-print("data mise cat:", data_mice_cat)
 cat_labels = data_mice_cat.columns.tolist()
-print(cat_labels)
 data_mice_c = imp_mode.fit_transform(data_mice_cat)
 data_mice_c = pd.DataFrame(data=data_mice_c)
-print("data mise cat:", data_mice_c)
 last_column = data_mice_c.iloc[: , -1]
-print("last column is:", last_column)
 data_mice_c = data_mice_c.set_axis(cat_labels, axis=1, inplace=False)
-print(data_mice_c)
 
 
 # Concatenate categorical and float data
