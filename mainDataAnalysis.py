@@ -55,15 +55,40 @@ data_descriptives.to_excel("data_descriptives.xlsx")
 data_without_columns_missing.select_dtypes('number').hist(figsize=(24,24), ec='w')
 plt.show()
 
-# MICE to impute missing data
-imp_median = IterativeImputer(max_iter=10, tol=0.001, n_nearest_features=10, initial_strategy='most_frequent', skip_complete=False, verbose=2, add_indicator=False)
-data_mice = imp_median.fit_transform(data_without_columns_missing)
-data_mice = pd.DataFrame(data=data_mice)
-data_mice.to_excel("data_mice.xlsx")
+# MICE to impute missing float data
+imp_median = IterativeImputer(max_iter=10, tol=0.001, n_nearest_features=10, initial_strategy='median', skip_complete=False, verbose=2, add_indicator=False)
+data_mice_float = data_without_columns_missing.select_dtypes("float")
+print(data_mice_float)
+float_labels = data_mice_float.columns.tolist()
+data_mice_fl = imp_median.fit_transform(data_mice_float)
+data_mice_fl = pd.DataFrame(data=data_mice_fl)
+data_mice_fl = data_mice_fl.set_axis(float_labels, axis=1, inplace=False)
+# MICE to impute missing categorical data
+imp_mode = IterativeImputer(max_iter=10, tol=0.001, n_nearest_features=10, initial_strategy='most_frequent', skip_complete=False, verbose=2, add_indicator=False)
+data_mice_cat = data_without_columns_missing.select_dtypes(exclude="float")
+print("data mise cat:", data_mice_cat)
+cat_labels = data_mice_cat.columns.tolist()
+print(cat_labels)
+data_mice_c = imp_mode.fit_transform(data_mice_cat)
+data_mice_c = pd.DataFrame(data=data_mice_c)
+print("data mise cat:", data_mice_c)
+last_column = data_mice_c.iloc[: , -1]
+print("last column is:", last_column)
+data_mice_c = data_mice_c.set_axis(cat_labels, axis=1, inplace=False)
+print(data_mice_c)
 
-# Means, variances, etc. of numerical data after MICE and comparison with before MICE
+
+# Concatenate categorical and float data
+data_mice_c.to_excel("data_mice_cat.xlsx")
+data_mice_fl.to_excel("data_mice_float.xlsx")
+
+data_mice = pd.concat([data_mice_c, data_mice_fl], axis=1)
+#Order according to "old" column order
+data_mice = data_mice.reindex(columns=labels_included_variables)
+
+# # Means, variances, etc. of numerical data after MICE and comparison with before MICE
 data_descriptives_after_MICE = data_mice.select_dtypes('number').agg(['count', 'min', 'max', 'mad', 'mean', 'median', 'var', 'std'])
 data_descriptives_after_MICE.to_excel("data_descriptives_after_MICE.xlsx")
-data_descriptives_after_MICE.set_axis(labels_included_variables, axis = 1, inplace = True)
+# data_descriptives_after_MICE.set_axis(labels_included_variables, axis = 1, inplace = True)
 subtraction_descriptives = data_descriptives_after_MICE.sub(data_descriptives, axis = 1).div(data_descriptives)
 subtraction_descriptives.to_excel("data_descriptives_diff.xlsx")
