@@ -87,15 +87,18 @@ print("\t---MICE...---")
 # df = replace_nans_with_mode(df)
 df = apply_MICE(df)
 
-print("\t---Transform data to numeric...---")
-# Transform categorical string data to numeric
-df["FLAG_OWN_CAR"] = df["FLAG_OWN_CAR"].replace(['Y', 'N'], [1, 0])
-df["FLAG_OWN_REALTY"] = df["FLAG_OWN_REALTY"].replace(['Y', 'N'], [1, 0])
-df["EMERGENCYSTATE_MODE"] = df["EMERGENCYSTATE_MODE"].replace(['Yes', 'No'], [1, 0])
 
-for column in df:
-    if df[column].dtype == object:
-        df[column] = df[column].replace(df[column].unique().tolist(), [*range(1, len(df[column].unique()) + 1)])
+
+# code for one-hot encoding
+# # creating initial dataframe
+# bridge_types = ('Arch','Beam','Truss','Cantilever','Tied Arch','Suspension','Cable')
+# bridge_df = pd.DataFrame(bridge_types, columns=['Bridge_Types'])
+# # generate binary values using get_dummies
+# dum_df = pd.get_dummies(bridge_df, columns=["Bridge_Types"], prefix=["Type_is"] )
+# # merge with main df bridge_df on key values
+# bridge_df = bridge_df.join(dum_df)
+# bridge_df
+
 
 # print(df['CODE_GENDER'].value_counts(ascending=False))
 
