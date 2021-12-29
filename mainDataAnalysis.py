@@ -25,9 +25,12 @@ for column in df:
 
 # %%
 # Missing values percentages percentage
+num_missing = df.isnull().sum().sum()
+per_missing = num_missing/df.size
 count_missing_per = df.isnull().sum()
 count_missing_per.describe()
 count_missing_per = count_missing_per.div(len(df))
+count_column_missing = count_missing_per[count_missing_per != 0].count()/count_missing_per.size
 #print(count_missing_per)
 #count_missing_per.to_excel("count_missing_per.xlsx")
 
