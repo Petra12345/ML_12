@@ -46,7 +46,7 @@ df = df[labels_data_cut_off]
 
 # Means, variances, etc. of numerical data
 data_descriptives = df.select_dtypes('number').agg(['count','min', 'max','mad','mean','median','var','std'])
-data_descriptives.to_excel("data_descriptives.xlsx")
+data_descriptives.to_excel("Data/Exploration/data_descriptives.xlsx")
 #print(data_descriptives)
 
 # Histogram of numerical data
@@ -83,11 +83,11 @@ data_mice = data_mice.reindex(columns=labels_data_cut_off)
 
 # # Means, variances, etc. of numerical data after MICE and comparison with before MICE
 data_descriptives_after_MICE = data_mice.select_dtypes('number').agg(['count', 'min', 'max', 'mad', 'mean', 'median', 'var', 'std'])
-data_descriptives_after_MICE.to_excel("data_descriptives_after_MICE.xlsx")
+data_descriptives_after_MICE.to_excel("Data/Exploration/data_descriptives_after_MICE.xlsx")
 
 # See percentual difference with non-imputed data
 subtraction_descriptives = data_descriptives_after_MICE.sub(data_descriptives, axis = 1).div(data_descriptives)
-subtraction_descriptives.to_excel("data_descriptives_diff.xlsx")
+subtraction_descriptives.to_excel("Data/Exploration/data_descriptives_diff.xlsx")
 
 # %% Machine Learning
 
