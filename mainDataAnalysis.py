@@ -73,8 +73,8 @@ last_column = data_mice_c.iloc[: , -1]
 data_mice_c = data_mice_c.set_axis(cat_labels, axis=1, inplace=False)
 
 # Concatenate categorical and float data
-data_mice_c.to_excel("data_mice_cat.xlsx")
-data_mice_fl.to_excel("data_mice_float.xlsx")
+#data_mice_c.to_excel("data_mice_cat.xlsx")
+#data_mice_fl.to_excel("data_mice_float.xlsx")
 
 data_mice = pd.concat([data_mice_c, data_mice_fl], axis=1)
 
