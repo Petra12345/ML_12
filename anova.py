@@ -1,6 +1,7 @@
 # Import packages
 from sklearn import linear_model, metrics, model_selection, tree, ensemble, preprocessing
 from imblearn import over_sampling
+from sklearn.decomposition import PCA
 
 from preprocessing_funcs import *
 
@@ -76,24 +77,24 @@ X = df.iloc[:, 2:]
 y = np.array(target)
 x = np.array(X)
 
-# print("\t---perform PCA...---")
+print("\t---perform PCA...---")
 # covariance_matrix = np.cov(x)
 # eigen_values, eigen_vectors = np.linalg.eig(covariance_matrix)
-
+#
 # variance_explained = []
 # for eigen_value in eigen_values:
 #     variance_explained.append((eigen_value/sum(eigen_values)*100))
-
+#
 # total_variance_explained = []
 # for index, value in enumerate(variance_explained):
 #     total_variance_explained.append(sum(variance_explained[:index+1]))
-
+#
 # fig, ax = plt.subplots()
 # variance_table = pd.DataFrame(columns=['PCs','totalVariance'])
-
+#
 # for index in range(0,60):
 #     variance_table = variance_table.append({'PCs': int(index), 'totalVariance': np.round(total_variance_explained[index-1], decimals=2)}, ignore_index=True)
-
+#
 # plt.style.use("ggplot")
 # plt.plot(variance_explained)
 # plt.plot(total_variance_explained)
@@ -104,18 +105,21 @@ x = np.array(X)
 # plt.legend(["Variance explained per PC", "Total variance explained"])
 # plt.show()
 
-# k = 200
-# pca_func = decomposition.PCA(n_components=k)
-# x_pca = pca_func.fit_transform(x)
-# print(np.array([x_pca.explained_variance_ratio_[:i].sum() for i in range(1, k+1)]).round(2))
+# %%
+k = 100     #TODO: miss number of components bepalen aan de hand van expl variance
+pca_func = PCA(n_components=k)
+x_pca = pca_func.fit_transform(x,k)
+#print(np.array([x_pca.explained_variance_ratio_[:i].sum() for i in range(1, k+1)]).round(2))
+#print(x_pca.explained_variance_ratio_)
 
+# %%
 print("\t---Perform cross-validation...---")
 # implement k-fold cross-validation
 k = 2
 kf = model_selection.KFold(n_splits=k, shuffle=True, random_state=0)
 
-for train_i, test_i in kf.split(x):
-    x_train, x_test = x[train_i, :], x[test_i, :]
+for train_i, test_i in kf.split(x_pca):
+    x_train, x_test = x_pca[train_i, :], x_pca[test_i, :]
     y_train, y_test = y[train_i], y[test_i]
 
     # balance out data with SMOTE
@@ -134,7 +138,7 @@ for train_i, test_i in kf.split(x):
 
     print("\t---random forests...---")
     modelRanFor = ensemble.RandomForestClassifier().fit(x_smote, y_smote)
-    print(metrics.classification_report(y_test, modelRanFor.predict(x_test)))
+    print(metrics   .classification_report(y_test, modelRanFor.predict(x_test)))
 
     # calculate the confusion matrix
     # print(metrics.confusion_matrix(y_test, modelLogReg.predict(x_test)))
