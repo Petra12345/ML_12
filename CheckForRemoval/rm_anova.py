@@ -1,9 +1,8 @@
 # Import packages
 from sklearn import linear_model, metrics, model_selection, tree, ensemble, preprocessing
 from imblearn import over_sampling
-from sklearn.decomposition import PCA
 
-from preprocessing_funcs import *
+from Functions.preprocessing_funcs import *
 
 # pd.set_option('display.max_rows', None)
 # print(df.dtypes)
