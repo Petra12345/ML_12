@@ -4,6 +4,7 @@ import numpy as np
 from sklearn.decomposition import PCA
 from sklearn.experimental import enable_iterative_imputer
 from sklearn.impute import IterativeImputer
+from sklearn.preprocessing import Normalizer
 import time
 
 
@@ -16,7 +17,7 @@ def load_data(file_name='Data/application_data/application_data.csv'):
     return pd.read_csv(file_name)
 
 
-def standardize_continuous_cols(df):
+def standardize_continuous_numeric_cols(df):
     """
     Function for standardizing all continuous variables in the dataframe.
     :param df:  The dataframe to be standardized
@@ -27,13 +28,12 @@ def standardize_continuous_cols(df):
             # TODO: WAT GEBEURT HIER MET MISSING DATA?
             mean_col = np.mean(df[column])
             stddev_col = np.std(df[column])
-            # print("column " + column + " has mean: " + str(mean_col) + " and stdev " + str(stddev_col))
+            #print("column " + column + " has mean: " + str(mean_col) + " and stdev " + str(stddev_col))
 
             df[column] = (df[column] - mean_col) / stddev_col
     return df
 
-
-def remove_columns_missing_values(df, missing_cut_off=0.6):
+def remove_columns_missing_values(df, missing_cut_off=1):
     """
     Removes all columns (variables) that have at least a percentage of missing values
     according to a specified cut-off.
@@ -88,6 +88,29 @@ def one_hot_encode_categorical_cols(df):
 
     return df
 
+def normalize(arr, t_min, t_max):
+    norm_arr = []
+    diff = t_max - t_min
+    diff_arr = max(arr) - min(arr)
+    for i in arr:
+        temp = (((i - min(arr)) * diff) / diff_arr) + t_min
+        norm_arr.append(temp)
+    return norm_arr
+
+def normalize_data(df):
+    """
+    Min max feature scaling
+    :param df:  The dataframe to be normalized
+    :return:    The dataframe that has its columns normalized
+    """
+    print("---Normalize---")
+    range_to_normalize = (0, 1)
+    for column in df:
+        if df[column].dtype == float:
+            df[column] = normalize(df[column], range_to_normalize[0], range_to_normalize[1])
+            print(df[column])
+    print(df)
+    return df
 
 def make_dataframe_MICE(df, fill_in):
     """
@@ -126,7 +149,7 @@ def apply_MICE(df):
     return data_mice
 
 
-def perform_pca(x, k=100):
+def perform_pca(x, k=0.9):
     """
     Perform pca on the variables x and choose the k-best
     :param x:   The variables to perform pca on
@@ -161,10 +184,11 @@ def perform_pca(x, k=100):
     # plt.show()
 
     # TODO: miss number of components bepalen aan de hand van expl variance
-    pca_func = PCA(n_components=k)
-    x_pca = pca_func.fit_transform(x, k)
+    pca_func = PCA(n_components=k, svd_solver='full')
+    x_pca = pca_func.fit(x)
+    #x_pca = pca_func.fit_transform(x, k)
     # print(np.array([x_pca.explained_variance_ratio_[:i].sum() for i in range(1, k+1)]).round(2))
-    # print(x_pca.explained_variance_ratio_)
+    print(x_pca.explained_variance_ratio_)
     return x_pca
 
 
