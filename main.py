@@ -5,8 +5,8 @@ from Functions.preprocessing_funcs import *
 # Load data and some initial data processing
 print("---Load data and preprocess---")
 df = load_data()
-#df = standardize_continuous_numeric_cols(df)
-#df = remove_columns_missing_values(df)  #TODO dit hoeft niet meer toch?
+# df = standardize_continuous_numeric_cols(df)
+# df = remove_columns_missing_values(df)  #TODO dit hoeft niet meer toch?
 df = remove_constant_columns(df)
 df = one_hot_encode_categorical_cols(df)
 
@@ -14,7 +14,6 @@ df = one_hot_encode_categorical_cols(df)
 print("---Apply MICE---")
 df = apply_MICE(df)
 df = normalize_data(df)
-
 
 # setting predictors and targets
 target = df["TARGET"]
@@ -34,7 +33,7 @@ x = np.array(X)
 
 # PCA
 print("---PCA---")
-x_pca = perform_pca(x)
+x_pca, pca_func = perform_pca(x)
 
 # Cross-validation
 print("---Cross-validation---")
