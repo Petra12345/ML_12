@@ -33,7 +33,7 @@ def standardize_continuous_numeric_cols(df):
             df[column] = (df[column] - mean_col) / stddev_col
     return df
 
-def remove_columns_missing_values(df, missing_cut_off=1):
+def remove_columns_missing_values(df, missing_cut_off=0.6):
     """
     Removes all columns (variables) that have at least a percentage of missing values
     according to a specified cut-off.
@@ -104,12 +104,19 @@ def normalize_data(df):
     :return:    The dataframe that has its columns normalized
     """
     print("---Normalize---")
-    range_to_normalize = (0, 1)
-    for column in df:
+    #df_num = df.select_dtypes(include=[np.float])
+    # range_to_normalize = (0, 1)
+    # for column in df:
+    #     if df[column].dtype == float:
+    #         df[column] = normalize(df[column], range_to_normalize[0], range_to_normalize[1])
+    #         print(df[column])
+    #
+    cols_to_norm = []
+    for column in df.columns:
         if df[column].dtype == float:
-            df[column] = normalize(df[column], range_to_normalize[0], range_to_normalize[1])
-            print(df[column])
-    print(df)
+            cols_to_norm.append(column)
+    df[cols_to_norm] = df[cols_to_norm].apply(lambda x: (x - x.min()) / (x.max() - x.min()))
+
     return df
 
 def make_dataframe_MICE(df, fill_in):
@@ -186,9 +193,9 @@ def perform_pca(x, k=0.9):
     # TODO: miss number of components bepalen aan de hand van expl variance
     pca_func = PCA(n_components=k, svd_solver='full')
     x_pca = pca_func.fit(x)
-    #x_pca = pca_func.fit_transform(x, k)
+    x_pca = pca_func.fit_transform(x, k)
     # print(np.array([x_pca.explained_variance_ratio_[:i].sum() for i in range(1, k+1)]).round(2))
-    print(x_pca.explained_variance_ratio_)
+    #print(x_pca.explained_variance_ratio_)
     return x_pca
 
 

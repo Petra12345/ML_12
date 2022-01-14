@@ -6,15 +6,15 @@ from Functions.preprocessing_funcs import *
 print("---Load data and preprocess---")
 df = load_data()
 #df = standardize_continuous_numeric_cols(df)
-df = remove_columns_missing_values(df)  #TODO dit hoeft niet meer toch?
+#df = remove_columns_missing_values(df)  #TODO dit hoeft niet meer toch?
 df = remove_constant_columns(df)
 df = one_hot_encode_categorical_cols(df)
-#df = normalize_data(df)
-
 
 # Apply MICE and standardize cols
 print("---Apply MICE---")
 df = apply_MICE(df)
+df = normalize_data(df)
+
 
 # setting predictors and targets
 target = df["TARGET"]
