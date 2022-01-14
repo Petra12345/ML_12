@@ -196,7 +196,7 @@ def perform_pca(x, k=0.9):
     x_pca = pca_func.fit_transform(x, k)
     # print(np.array([x_pca.explained_variance_ratio_[:i].sum() for i in range(1, k+1)]).round(2))
     #print(x_pca.explained_variance_ratio_)
-    return x_pca
+    return x_pca, pca_func
 
 
 # def replace_nans_with_mode(df):

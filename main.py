@@ -34,7 +34,7 @@ x = np.array(X)
 
 # PCA
 print("---PCA---")
-x_pca = perform_pca(x)
+x_pca, pca_func = perform_pca(x)
 
 # Cross-validation
 print("---Cross-validation---")
