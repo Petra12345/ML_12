@@ -28,10 +28,11 @@ def standardize_continuous_numeric_cols(df):
             # TODO: WAT GEBEURT HIER MET MISSING DATA?
             mean_col = np.mean(df[column])
             stddev_col = np.std(df[column])
-            #print("column " + column + " has mean: " + str(mean_col) + " and stdev " + str(stddev_col))
+            # print("column " + column + " has mean: " + str(mean_col) + " and stdev " + str(stddev_col))
 
             df[column] = (df[column] - mean_col) / stddev_col
     return df
+
 
 def remove_columns_missing_values(df, missing_cut_off=0.6):
     """
@@ -88,6 +89,7 @@ def one_hot_encode_categorical_cols(df):
 
     return df
 
+
 def normalize(arr, t_min, t_max):
     norm_arr = []
     diff = t_max - t_min
@@ -97,6 +99,7 @@ def normalize(arr, t_min, t_max):
         norm_arr.append(temp)
     return norm_arr
 
+
 def normalize_data(df):
     """
     Min max feature scaling
@@ -104,7 +107,7 @@ def normalize_data(df):
     :return:    The dataframe that has its columns normalized
     """
     print("---Normalize---")
-    #df_num = df.select_dtypes(include=[np.float])
+    # df_num = df.select_dtypes(include=[np.float])
     # range_to_normalize = (0, 1)
     # for column in df:
     #     if df[column].dtype == float:
@@ -118,6 +121,7 @@ def normalize_data(df):
     df[cols_to_norm] = df[cols_to_norm].apply(lambda x: (x - x.min()) / (x.max() - x.min()))
 
     return df
+
 
 def make_dataframe_MICE(df, fill_in):
     """
@@ -195,9 +199,8 @@ def perform_pca(x, k=0.9):
     x_pca = pca_func.fit(x)
     x_pca = pca_func.fit_transform(x, k)
     # print(np.array([x_pca.explained_variance_ratio_[:i].sum() for i in range(1, k+1)]).round(2))
-    #print(x_pca.explained_variance_ratio_)
+    # print(x_pca.explained_variance_ratio_)
     return x_pca, pca_func
-
 
 # def replace_nans_with_mode(df):
 #     for column in df:

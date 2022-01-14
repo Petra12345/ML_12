@@ -105,11 +105,11 @@ print("\t---perform PCA...---")
 # plt.show()
 
 # %%
-k = 100     #TODO: miss number of components bepalen aan de hand van expl variance
+k = 100  # TODO: miss number of components bepalen aan de hand van expl variance
 pca_func = PCA(n_components=k)
-x_pca = pca_func.fit_transform(x,k)
-#print(np.array([x_pca.explained_variance_ratio_[:i].sum() for i in range(1, k+1)]).round(2))
-#print(x_pca.explained_variance_ratio_)
+x_pca = pca_func.fit_transform(x, k)
+# print(np.array([x_pca.explained_variance_ratio_[:i].sum() for i in range(1, k+1)]).round(2))
+# print(x_pca.explained_variance_ratio_)
 
 # %%
 print("\t---Perform cross-validation...---")
@@ -137,7 +137,7 @@ for train_i, test_i in kf.split(x_pca):
 
     print("\t---random forests...---")
     modelRanFor = ensemble.RandomForestClassifier().fit(x_smote, y_smote)
-    print(metrics   .classification_report(y_test, modelRanFor.predict(x_test)))
+    print(metrics.classification_report(y_test, modelRanFor.predict(x_test)))
 
     # calculate the confusion matrix
     # print(metrics.confusion_matrix(y_test, modelLogReg.predict(x_test)))
