@@ -36,6 +36,14 @@ def make_show_pearson_correlation(df):
     plt.show()
 
 
+def print_baseline(y_test):
+    return
+    num_1 = sum(y_test)
+    num_0 = len(y_test) - num_1
+
+
+
+
 def cross_validation(x, y, k=2):
     """
     Perform cross_validation given features x and target y.
@@ -48,6 +56,9 @@ def cross_validation(x, y, k=2):
     for train_i, test_i in kf.split(x):
         x_train, x_test = x[train_i, :], x[test_i, :]
         y_train, y_test = y[train_i], y[test_i]
+
+        # predict all zero:
+        print_baseline(y_test)
 
         # balance out data with SMOTE
         print("\t---perform SMOTE...---")

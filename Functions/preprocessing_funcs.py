@@ -33,6 +33,7 @@ def standardize_continuous_numeric_cols(df):
             df[column] = (df[column] - mean_col) / stddev_col
     return df
 
+
 def remove_columns_missing_values(df, missing_cut_off=0.6):
     """
     Removes all columns (variables) that have at least a percentage of missing values
@@ -88,6 +89,7 @@ def one_hot_encode_categorical_cols(df):
 
     return df
 
+
 def normalize(arr, t_min, t_max):
     norm_arr = []
     diff = t_max - t_min
@@ -96,6 +98,7 @@ def normalize(arr, t_min, t_max):
         temp = (((i - min(arr)) * diff) / diff_arr) + t_min
         norm_arr.append(temp)
     return norm_arr
+
 
 def normalize_data(df):
     """
@@ -118,6 +121,7 @@ def normalize_data(df):
     df[cols_to_norm] = df[cols_to_norm].apply(lambda x: (x - x.min()) / (x.max() - x.min()))
 
     return df
+
 
 def make_dataframe_MICE(df, fill_in):
     """
