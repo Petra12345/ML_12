@@ -58,6 +58,8 @@ def cross_validation(x, y, k=2):
         print("\t---perform simple logistic regression...---")
         modelLogReg = linear_model.LogisticRegression(solver="liblinear", random_state=0).fit(x_smote, y_smote)
         print(metrics.classification_report(y_test, modelLogReg.predict(x_test)))
+        print(metrics.confusion_matrix(y_test, modelLogReg.predict(x_test)))
+        print(metrics.f1_score(y_test, modelLogReg.predict(x_test)))
 
         print("\t---making decision tree...---")
         modelDecTree = tree.DecisionTreeClassifier(criterion="gini", splitter="best").fit(x_smote, y_smote)
