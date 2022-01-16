@@ -75,6 +75,8 @@ def cross_validation(x, y, k=2):
         print("\t---making decision tree...---")
         modelDecTree = tree.DecisionTreeClassifier(criterion="gini", splitter="best").fit(x_smote, y_smote)
         print(metrics.classification_report(y_test, modelDecTree.predict(x_test)))
+        # tree.plot_tree(modelDecTree)
+        # plt.show()
 
         print("\t---random forests...---")
         modelRanFor = ensemble.RandomForestClassifier().fit(x_smote, y_smote)
