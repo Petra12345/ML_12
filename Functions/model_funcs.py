@@ -81,7 +81,7 @@ def cross_validation(data_raw, models_dict, k=2):
 
         print("\t---Data preprocessing---")
         training_data, rm_columns = remove_constant_columns(training_data)
-        validation_data.drop(rm_columns, axis=1)
+        validation_data = validation_data.drop(rm_columns, axis=1)
 
         one_hot_encoded_training_data = pd.get_dummies(training_data)
         one_hot_encoded_validation_data = pd.get_dummies(validation_data)
@@ -99,8 +99,11 @@ def cross_validation(data_raw, models_dict, k=2):
         # setting predictors and targets
         y_train = np.array(training_data["TARGET"])
         y_validation = np.array(validation_data["TARGET"])
+
+        print(f"number of missing values in df: {validation_data.columns[validation_data.isnull().any()].tolist()}")
         x_train = np.array(training_data.iloc[:, 2:])
         x_validation = np.array(validation_data.iloc[:, 2:])
+        print(f"number of missing values in numpy array: {np.count_nonzero(np.isnan(x_validation))}")
 
         # PCA
         print("\t---PCA---")

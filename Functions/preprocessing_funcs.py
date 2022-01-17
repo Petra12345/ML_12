@@ -24,11 +24,11 @@ def remove_constant_columns(df):
     :return:    The transformed dataframe with constant columns removed
     """
     rm_columns = []
-    for column in df:
+    for column in df.columns:
         if len(df[column].unique()) == 1:
             print("Removing constant column: ", column)
-            df = df.drop(column, axis=1)
             rm_columns.append(column)
+    df = df.drop(rm_columns, axis=1)
     return df, rm_columns
 
 
@@ -42,7 +42,10 @@ def normalize_data(df):
     # for column in df.columns:
     #     if df[column].dtype == float:
     #         cols_to_norm.append(column)
-    cols_to_norm = df.select_dtypes(include=[np.float])
+    # print(f"length of loop: {len(cols_to_norm)}")
+    # TODO: HMM, deze returned ook de binary columns...
+    cols_to_norm = df.select_dtypes("float").columns.tolist()
+    print(f"length of dtypes: {len(cols_to_norm)}")
     df[cols_to_norm] = df[cols_to_norm].apply(lambda x: (x - x.min()) / (x.max() - x.min()))
 
     return df, cols_to_norm
@@ -56,15 +59,10 @@ def make_dataframe_MICE(df, fill_in):
     :return:            The dataframe with the missing values filled in according to the fill_in method
     """
     float_labels = df.columns.tolist()
-    print(len(float_labels))
-    print(float_labels)
+
     data_mice = fill_in.transform(df)
 
     data_mice = pd.DataFrame(data=data_mice)
-    print(data_mice)
-    print(len(data_mice.columns.tolist()))
-    print(data_mice.columns.tolist())
-    # print(f"Difference: {set(float_labels).symmetric_difference(set(data_mice.columns.tolist()))}")
     data_mice = data_mice.set_axis(float_labels, axis=1, inplace=False)
     return data_mice
 
@@ -86,17 +84,22 @@ def apply_MICE(df, fit=False, imp_median=None, imp_mode=None):
         imp_median = None
         imp_mode = None
 
+    df_floats = df.select_dtypes("float")
+    print(f"number of columns of floats: {len(df_floats.columns)}")
     if fit:
         imp_median = IterativeImputer(max_iter=10, tol=0.001, n_nearest_features=10, initial_strategy='median',
                                       skip_complete=False, verbose=2, add_indicator=False, random_state=0)
-        imp_median = imp_median.fit(df.select_dtypes("float"))
-    data_mice_float = make_dataframe_MICE(df.select_dtypes("float"), imp_median)
 
+        imp_median.fit(df_floats)
+    data_mice_float = make_dataframe_MICE(df_floats, imp_median)
+
+    df_nonfloats = df.select_dtypes(exclude="float")
+    print(f"number of columns of nonfloats: {len(df_nonfloats.columns)}")
     if fit:
         imp_mode = IterativeImputer(max_iter=10, tol=0.001, n_nearest_features=10, initial_strategy='most_frequent',
                                     skip_complete=False, verbose=2, add_indicator=False, random_state=0)
-        imp_mode.fit(df.select_dtypes(exclude="float"))
-    data_mice_cat = make_dataframe_MICE(df.select_dtypes(exclude="float"), imp_mode)
+        imp_mode.fit(df_nonfloats)
+    data_mice_cat = make_dataframe_MICE(df_nonfloats, imp_mode)
 
     data_mice = pd.concat([data_mice_cat, data_mice_float], axis=1)
     data_mice = data_mice.reindex(columns=labels)
