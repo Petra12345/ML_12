@@ -46,23 +46,21 @@ def normalize_data(df):
     # TODO: HMM, deze returned ook de binary columns...
     cols_to_norm = df.select_dtypes("float").columns.tolist()
     cols_to_norm_dict = {}
-    print(f"length of dtypes: {len(cols_to_norm)}")
     x_max = df[cols_to_norm].max().tolist()
     x_min = df[cols_to_norm].min().tolist()
     for idx, column in enumerate(cols_to_norm):
         cols_to_norm_dict[column] = {"max": x_max[idx], "min": x_min[idx]}
         df[column] = df[column].apply(
             lambda x: x_max[idx] if (x_max[idx] == x_min[idx]) else (x - x_min[idx]) / (x_max[idx] - x_min[idx]))
-        # df[cols_to_norm] = df[cols_to_norm].apply(lambda x: x.max() if (x.max() == x.min()) else (x - x.min()) / (x.max() - x.min()))
-
     return df, cols_to_norm_dict
 
 
 def normalize_test_data(df, dictionary):
     for key in dictionary:
-        x_max = dictionary["max"]
-        x_min = dictionary["min"]
+        x_max = dictionary[key]["max"]
+        x_min = dictionary[key]["min"]
         df[key] = df[key].apply(lambda x: x_max if (x_max == x_min) else (x - x_min) / (x_max - x_min))
+    return df
 
 
 def make_dataframe_MICE(df, fill_in):
@@ -118,7 +116,7 @@ def apply_MICE(df, fit=False, imp_median=None, imp_mode=None):
     print(f"number of columns of floats: {len(df_floats.columns)}")
     if fit:
         imp_median = IterativeImputer(max_iter=10, tol=0.001, n_nearest_features=10, initial_strategy='median',
-                                      skip_complete=False, verbose=2, add_indicator=False, random_state=0)
+                                      skip_complete=False, verbose=0, add_indicator=False, random_state=0)
         # print(df_floats.iloc[1:10,])
         imp_median.fit(df_floats)
     get_stats_Nans_df(df_floats)

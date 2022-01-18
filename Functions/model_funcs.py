@@ -3,6 +3,7 @@ import pandas as pd
 from imblearn import over_sampling
 from matplotlib import pyplot as plt
 import seaborn as sns
+import time
 
 from sklearn import feature_selection, model_selection, linear_model, tree, metrics, ensemble
 from sklearn.pipeline import make_pipeline
@@ -65,12 +66,14 @@ def make_random_forest_model(n_estimators=100):
 
 
 def cross_validation(data_raw, models_dict, k=2):
+
     """
     Perform cross_validation given features x and target y.
     :param training_data_raw:
     :param models_dict:
     :param k:                   Variable to determine k-fold cross validation
     """
+    start = time.time()
     kf = model_selection.KFold(n_splits=k, shuffle=True, random_state=1)
     iter = 0
 
@@ -79,10 +82,19 @@ def cross_validation(data_raw, models_dict, k=2):
         print(f"##### Iteration {iter} #####")
         training_data, validation_data = data_raw.copy().iloc[train_i,], data_raw.copy().iloc[val_i,]
 
+
         print("\t---Data preprocessing---")
+        # Extract target data
+        y_train = np.array(training_data["TARGET"])
+        training_data = training_data.drop(["TARGET"], axis=1)
+        y_validation = np.array(validation_data["TARGET"])
+        validation_data = validation_data.drop(["TARGET"], axis=1)
+
+        # Remove empty columns
         training_data, rm_columns = remove_empty_columns(training_data)
         validation_data = validation_data.drop(rm_columns, axis=1)
 
+        # One hot encode data
         one_hot_encoded_training_data = pd.get_dummies(training_data, dtype=int)
         one_hot_encoded_validation_data = pd.get_dummies(validation_data, dtype=int)
         one_hot_encoded_training_data.reset_index(drop=True, inplace=True)
@@ -90,40 +102,40 @@ def cross_validation(data_raw, models_dict, k=2):
         training_data, validation_data = one_hot_encoded_training_data.align(one_hot_encoded_validation_data, join='right', axis=1)
 
         # print(f"columns with missing values in df training: {training_data.columns[training_data.isnull().any()].tolist()}")
-        print(f"Number of rows/cols df training: {len(training_data)}, {len(training_data.columns)}")
+        # print(f"Number of rows/cols df training: {len(training_data)}, {len(training_data.columns)}")
         # print(f"columns with missing values in df validation: {validation_data.columns[validation_data.isnull().any()].tolist()}")
-        print(f"Number of rows df validation: {len(validation_data)}, {len(validation_data.columns)}")
+        # print(f"Number of rows df validation: {len(validation_data)}, {len(validation_data.columns)}")
         training_data, rm_columns = remove_empty_columns(training_data)  # ???
         validation_data = validation_data.drop(rm_columns, axis=1)
-        print(f"Number of floating types: {len(training_data.select_dtypes('float').columns.tolist())}")
+        # print(f"Number of floating types: {len(training_data.select_dtypes('float').columns.tolist())}")
 
-        # Apply MICE and standardize cols
+        # Apply MICE
         print("\t---Apply MICE---")
         training_data, imp_median, imp_mode = apply_MICE(training_data, fit=True)
         validation_data, _, _ = apply_MICE(validation_data, fit=False, imp_median=imp_median, imp_mode=imp_mode)
 
+        # Remove constant columns
         training_data, rm_columns = remove_constant_columns(training_data)
         validation_data = validation_data.drop(rm_columns, axis=1)
 
+        # Normalize data
         training_data, norm_columns_dict = normalize_data(training_data)
         validation_data = normalize_test_data(validation_data, norm_columns_dict)
 
-        # setting predictors and targets
-        y_train = np.array(training_data["TARGET"])
-        y_validation = np.array(validation_data["TARGET"])
+        # Set predictor data
 
-        print(f"columns with missing values in training_data: {training_data.columns[training_data.isnull().any()].tolist()}")
-        print(f"columns with missing values in validation_data: {validation_data.columns[validation_data.isnull().any()].tolist()}")
-        const_cols = []
-        for column in validation_data.columns:
-            if len(validation_data[column].unique()) == 1:
-                const_cols.append(column)
-        print(f"columns with constant values in validation_data: {const_cols}")
+        # print(f"columns with missing values in training_data: {training_data.columns[training_data.isnull().any()].tolist()}")
+        # print(f"columns with missing values in validation_data: {validation_data.columns[validation_data.isnull().any()].tolist()}")
+        # const_cols = []
+        # for column in validation_data.columns:
+        #     if len(validation_data[column].unique()) == 1:
+                # const_cols.append(column)
+        # # print(f"columns with constant values in validation_data: {const_cols}")
 
-        x_train = np.array(training_data.iloc[:, 2:])
-        x_validation = np.array(validation_data.iloc[:, 2:])
-        print(f"number of missing values in numpy array: {np.count_nonzero(np.isnan(x_train))}")
-        print(f"number of missing values in numpy array: {np.count_nonzero(np.isnan(x_validation))}")
+        x_train = np.array(training_data.iloc[:, 1:])
+        x_validation = np.array(validation_data.iloc[:, 1:])
+        # print(f"number of missing values in numpy array: {np.count_nonzero(np.isnan(x_train))}")
+        # print(f"number of missing values in numpy array: {np.count_nonzero(np.isnan(x_validation))}")
 
 
         # TODO: Ensure order of columns is the same?
@@ -131,12 +143,12 @@ def cross_validation(data_raw, models_dict, k=2):
         # PCA
         print("\t---PCA---")
         x_train, pca_func = perform_pca(x_train)
-
         x_validation = pca_func.transform(x_validation)
 
+        # SMOTE
         smote = over_sampling.SMOTE(random_state=0)
-        x_smote, y_smote = smote.fit_resample(x_train, y_train)
-        # We don't have to apply smote on the validation data
+        x_smote, y_smote = smote.fit_resample(x_train, y_train) # We don't have to apply smote on the validation data
+
 
         for key, model in models_dict.items():
             print(f"\t\t---perform {key}...---")
@@ -144,6 +156,6 @@ def cross_validation(data_raw, models_dict, k=2):
             print(metrics.confusion_matrix(y_validation, model.predict(x_validation)))
             print(metrics.f1_score(y_validation, model.predict(x_validation)))
             print(metrics.classification_report(y_validation, model.predict(x_validation)))
-
+    print("Time taken for cross validation for all models: " + str(time.time() - start) + " sec.\n\n")
     # Precision: How many retrieved items are relevant?
     # Recall: How many relevant items are retrieved?
