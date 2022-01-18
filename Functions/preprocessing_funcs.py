@@ -38,12 +38,6 @@ def normalize_data(df):
     :param df:  The dataframe to be normalized
     :return:    The dataframe that has its columns normalized
     """
-    # cols_to_norm = []
-    # for column in df.columns:
-    #     if df[column].dtype == float:
-    #         cols_to_norm.append(column)
-    # print(f"length of loop: {len(cols_to_norm)}")
-    # TODO: HMM, deze returned ook de binary columns...
     cols_to_norm = df.select_dtypes("float").columns.tolist()
     cols_to_norm_dict = {}
     x_max = df[cols_to_norm].max().tolist()
@@ -85,7 +79,7 @@ def get_stats_Nans_df(df):
     for column in df.columns:
         if round(df[column].isnull().sum() / len(df), 2) > 0.75:
             print(f"\t{column} = {df[column].isnull().sum()} ({round(df[column].isnull().sum() / len(df), 2)}%)")
-    # print(f"columns with missing values in df: {df.columns[df.isnull().any()].tolist()}")
+    print(f"columns with missing values in df: {df.columns[df.isnull().any()].tolist()}")
 
 
 def remove_empty_columns(df):
@@ -104,7 +98,6 @@ def apply_MICE(df, fit=False, imp_median=None, imp_mode=None):
     :param df:          The dataframe
     :return: The dataframe with missing values filled in according to MICE.
     """
-    start = time.time()
     labels = df.columns.tolist()
 
     if not fit and ((imp_median is None) or (imp_mode is None)):
@@ -117,9 +110,7 @@ def apply_MICE(df, fit=False, imp_median=None, imp_mode=None):
     if fit:
         imp_median = IterativeImputer(max_iter=10, tol=0.001, n_nearest_features=10, initial_strategy='median',
                                       skip_complete=False, verbose=0, add_indicator=False, random_state=0)
-        # print(df_floats.iloc[1:10,])
         imp_median.fit(df_floats)
-    get_stats_Nans_df(df_floats)
     data_mice_float = make_dataframe_MICE(df_floats, imp_median)
 
     df_nonfloats = df.select_dtypes(exclude="float")
@@ -128,12 +119,10 @@ def apply_MICE(df, fit=False, imp_median=None, imp_mode=None):
         imp_mode = IterativeImputer(max_iter=10, tol=0.001, n_nearest_features=10, initial_strategy='most_frequent',
                                     skip_complete=False, verbose=2, add_indicator=False, random_state=0)
         imp_mode.fit(df_nonfloats)
-    get_stats_Nans_df(df_nonfloats)
     data_mice_cat = make_dataframe_MICE(df_nonfloats, imp_mode)
 
     data_mice = pd.concat([data_mice_cat, data_mice_float], axis=1)
     data_mice = data_mice.reindex(columns=labels)
-    print("Time taken: " + str(time.time() - start) + " sec.\n\n")
 
     return data_mice, imp_median, imp_mode
 

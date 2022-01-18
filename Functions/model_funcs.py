@@ -66,7 +66,6 @@ def make_random_forest_model(n_estimators=100):
 
 
 def cross_validation(data_raw, models_dict, k=2):
-
     """
     Perform cross_validation given features x and target y.
     :param training_data_raw:
@@ -78,10 +77,12 @@ def cross_validation(data_raw, models_dict, k=2):
     iter = 0
 
     for train_i, val_i in kf.split(data_raw):
+        start_fold = time.time()
         iter += 1
-        print(f"##### Iteration {iter} #####")
+        print(f"#######################\n"
+              f"##### Iteration {iter} #####\n"
+              f"#######################")
         training_data, validation_data = data_raw.copy().iloc[train_i,], data_raw.copy().iloc[val_i,]
-
 
         print("\t---Data preprocessing---")
         # Extract target data
@@ -89,25 +90,17 @@ def cross_validation(data_raw, models_dict, k=2):
         training_data = training_data.drop(["TARGET"], axis=1)
         y_validation = np.array(validation_data["TARGET"])
         validation_data = validation_data.drop(["TARGET"], axis=1)
-
-        # Remove empty columns
-        training_data, rm_columns = remove_empty_columns(training_data)
-        validation_data = validation_data.drop(rm_columns, axis=1)
+        # TODO: What if there is no target value... Extract here or later on?
 
         # One hot encode data
         one_hot_encoded_training_data = pd.get_dummies(training_data, dtype=int)
         one_hot_encoded_validation_data = pd.get_dummies(validation_data, dtype=int)
-        one_hot_encoded_training_data.reset_index(drop=True, inplace=True)
-        one_hot_encoded_validation_data.reset_index(drop=True, inplace=True)
-        training_data, validation_data = one_hot_encoded_training_data.align(one_hot_encoded_validation_data, join='right', axis=1)
+        training_data, validation_data = one_hot_encoded_training_data.align(one_hot_encoded_validation_data,
+                                                                             join='right', axis=1)
 
-        # print(f"columns with missing values in df training: {training_data.columns[training_data.isnull().any()].tolist()}")
-        # print(f"Number of rows/cols df training: {len(training_data)}, {len(training_data.columns)}")
-        # print(f"columns with missing values in df validation: {validation_data.columns[validation_data.isnull().any()].tolist()}")
-        # print(f"Number of rows df validation: {len(validation_data)}, {len(validation_data.columns)}")
-        training_data, rm_columns = remove_empty_columns(training_data)  # ???
+        # Remove empty columns
+        training_data, rm_columns = remove_empty_columns(training_data)
         validation_data = validation_data.drop(rm_columns, axis=1)
-        # print(f"Number of floating types: {len(training_data.select_dtypes('float').columns.tolist())}")
 
         # Apply MICE
         print("\t---Apply MICE---")
@@ -122,33 +115,20 @@ def cross_validation(data_raw, models_dict, k=2):
         training_data, norm_columns_dict = normalize_data(training_data)
         validation_data = normalize_test_data(validation_data, norm_columns_dict)
 
-        # Set predictor data
-
-        # print(f"columns with missing values in training_data: {training_data.columns[training_data.isnull().any()].tolist()}")
-        # print(f"columns with missing values in validation_data: {validation_data.columns[validation_data.isnull().any()].tolist()}")
-        # const_cols = []
-        # for column in validation_data.columns:
-        #     if len(validation_data[column].unique()) == 1:
-                # const_cols.append(column)
-        # # print(f"columns with constant values in validation_data: {const_cols}")
-
+        # TODO: is this still necessary? ID should be dropped before right? Or it will be dropped due to PCA
         x_train = np.array(training_data.iloc[:, 1:])
         x_validation = np.array(validation_data.iloc[:, 1:])
-        # print(f"number of missing values in numpy array: {np.count_nonzero(np.isnan(x_train))}")
-        # print(f"number of missing values in numpy array: {np.count_nonzero(np.isnan(x_validation))}")
-
 
         # TODO: Ensure order of columns is the same?
-
         # PCA
         print("\t---PCA---")
         x_train, pca_func = perform_pca(x_train)
         x_validation = pca_func.transform(x_validation)
 
+        # TODO: Does order of PCA and SMOTE matter???
         # SMOTE
         smote = over_sampling.SMOTE(random_state=0)
-        x_smote, y_smote = smote.fit_resample(x_train, y_train) # We don't have to apply smote on the validation data
-
+        x_smote, y_smote = smote.fit_resample(x_train, y_train)
 
         for key, model in models_dict.items():
             print(f"\t\t---perform {key}...---")
@@ -156,6 +136,7 @@ def cross_validation(data_raw, models_dict, k=2):
             print(metrics.confusion_matrix(y_validation, model.predict(x_validation)))
             print(metrics.f1_score(y_validation, model.predict(x_validation)))
             print(metrics.classification_report(y_validation, model.predict(x_validation)))
-    print("Time taken for cross validation for all models: " + str(time.time() - start) + " sec.\n\n")
+        print(f"Time taken for {iter}-th cross validation for all models: " + str(time.time() - start_fold) + " sec.\n")
+    print("Time taken for cross validation for all models: " + str(time.time() - start) + " sec.")
     # Precision: How many retrieved items are relevant?
     # Recall: How many relevant items are retrieved?
