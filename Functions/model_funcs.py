@@ -60,8 +60,8 @@ def plot_decision_tree(model):
     plt.show()
 
 
-def make_random_forest_model():
-    return ensemble.RandomForestClassifier()
+def make_random_forest_model(n_estimators=100):
+    return ensemble.RandomForestClassifier(n_estimators=n_estimators)
 
 
 def cross_validation(data_raw, models_dict, k=2):
