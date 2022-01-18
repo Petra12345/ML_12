@@ -45,10 +45,24 @@ def normalize_data(df):
     # print(f"length of loop: {len(cols_to_norm)}")
     # TODO: HMM, deze returned ook de binary columns...
     cols_to_norm = df.select_dtypes("float").columns.tolist()
+    cols_to_norm_dict = {}
     print(f"length of dtypes: {len(cols_to_norm)}")
-    df[cols_to_norm] = df[cols_to_norm].apply(lambda x: x.max() if (x.max() - x.min() == 0) else (x - x.min()) / (x.max() - x.min()))
+    x_max = df[cols_to_norm].max().tolist()
+    x_min = df[cols_to_norm].min().tolist()
+    for idx, column in enumerate(cols_to_norm):
+        cols_to_norm_dict[column] = {"max": x_max[idx], "min": x_min[idx]}
+        df[column] = df[column].apply(
+            lambda x: x_max[idx] if (x_max[idx] == x_min[idx]) else (x - x_min[idx]) / (x_max[idx] - x_min[idx]))
+        # df[cols_to_norm] = df[cols_to_norm].apply(lambda x: x.max() if (x.max() == x.min()) else (x - x.min()) / (x.max() - x.min()))
 
-    return df, cols_to_norm
+    return df, cols_to_norm_dict
+
+
+def normalize_test_data(df, dictionary):
+    for key in dictionary:
+        x_max = dictionary["max"]
+        x_min = dictionary["min"]
+        df[key] = df[key].apply(lambda x: x_max if (x_max == x_min) else (x - x_min) / (x_max - x_min))
 
 
 def make_dataframe_MICE(df, fill_in):

@@ -8,7 +8,7 @@ from sklearn import feature_selection, model_selection, linear_model, tree, metr
 from sklearn.pipeline import make_pipeline
 
 from Functions.preprocessing_funcs import remove_constant_columns, apply_MICE, \
-    normalize_data, perform_pca, remove_empty_columns
+    normalize_data, perform_pca, remove_empty_columns, normalize_test_data
 
 
 def anova_feature_selection(X, target, num_features=20):
@@ -80,12 +80,8 @@ def cross_validation(data_raw, models_dict, k=2):
         training_data, validation_data = data_raw.copy().iloc[train_i,], data_raw.copy().iloc[val_i,]
 
         print("\t---Data preprocessing---")
-        training_data, rm_columns = remove_constant_columns(training_data)
-        validation_data = validation_data.drop(rm_columns, axis=1)
         training_data, rm_columns = remove_empty_columns(training_data)
         validation_data = validation_data.drop(rm_columns, axis=1)
-
-        # TODO: remove columns when constant, contain only nans, or combination!!
 
         one_hot_encoded_training_data = pd.get_dummies(training_data, dtype=int)
         one_hot_encoded_validation_data = pd.get_dummies(validation_data, dtype=int)
@@ -106,11 +102,11 @@ def cross_validation(data_raw, models_dict, k=2):
         training_data, imp_median, imp_mode = apply_MICE(training_data, fit=True)
         validation_data, _, _ = apply_MICE(validation_data, fit=False, imp_median=imp_median, imp_mode=imp_mode)
 
-        # TODO: Hierna gaat het pas fout... JE DEELT FACKING DOOR NUL 0000
+        training_data, rm_columns = remove_constant_columns(training_data)
+        validation_data = validation_data.drop(rm_columns, axis=1)
 
-        training_data, norm_columns = normalize_data(training_data)
-        validation_data[norm_columns] = validation_data[norm_columns].apply(
-            lambda x: x.max() if (x.max() - x.min() == 0) else (x - x.min()) / (x.max() - x.min()))  # TODO: Make dictionary from norm_columns {column: {min, max}}
+        training_data, norm_columns_dict = normalize_data(training_data)
+        validation_data = normalize_test_data(validation_data, norm_columns_dict)
 
         # setting predictors and targets
         y_train = np.array(training_data["TARGET"])
