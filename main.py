@@ -1,23 +1,13 @@
 # Import packages
+from sklearn.model_selection import train_test_split
+
 from Functions.model_funcs import *
 from Functions.preprocessing_funcs import *
 
 # Load data and some initial data processing
-print("---Load data and preprocess---")
+print("---Load data---")
 df = load_data()
-# df = standardize_continuous_numeric_cols(df)
-# df = remove_columns_missing_values(df)  #TODO dit hoeft niet meer toch?
-df = remove_constant_columns(df)
-df = one_hot_encode_categorical_cols(df)
-
-# Apply MICE and standardize cols
-print("---Apply MICE---")
-df = apply_MICE(df)
-df = normalize_data(df)
-
-# setting predictors and targets
-target = df["TARGET"]
-X = df.iloc[:, 2:]
+training_data_raw, testing_data_raw = train_test_split(df, test_size=0.1, random_state=0)
 
 # perform feature selection with ANOVA
 # print("---ANOVA Feature Selection---")
@@ -27,17 +17,7 @@ X = df.iloc[:, 2:]
 # print("---Pearson correlation---")
 # make_show_pearson_correlation(df)
 
-# transform data to numpy arrays
-y = np.array(target)
-x = np.array(X)
-
-# PCA
-print("---PCA---")
-x_pca, pca_func = perform_pca(x)
 
 # Cross-validation
-print("---Cross-validation---")
-cross_validation(x_pca, y)
-
-# Precision: How many retrieved items are relevant?
-# Recall: How many relevant items are retrieved?
+models_dict = {"simple logistic regression": make_lin_model()}
+cross_validation(training_data_raw, models_dict)
