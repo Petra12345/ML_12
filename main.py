@@ -19,6 +19,5 @@ training_data_raw, testing_data_raw = train_test_split(df, test_size=0.1, random
 
 
 # Cross-validation
-models_dict = {"simple logistic regression": make_lin_model(),
-               "decision tree": make_decision_tree_model()}
+models_dict = {"simple logistic regression": make_lin_model()}
 cross_validation(training_data_raw, models_dict)

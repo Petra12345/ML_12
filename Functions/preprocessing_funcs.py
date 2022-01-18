@@ -46,7 +46,7 @@ def normalize_data(df):
     # TODO: HMM, deze returned ook de binary columns...
     cols_to_norm = df.select_dtypes("float").columns.tolist()
     print(f"length of dtypes: {len(cols_to_norm)}")
-    df[cols_to_norm] = df[cols_to_norm].apply(lambda x: (x - x.min()) / (x.max() - x.min()))
+    df[cols_to_norm] = df[cols_to_norm].apply(lambda x: x.max() if (x.max() - x.min() == 0) else (x - x.min()) / (x.max() - x.min()))
 
     return df, cols_to_norm
 
@@ -59,12 +59,28 @@ def make_dataframe_MICE(df, fill_in):
     :return:            The dataframe with the missing values filled in according to the fill_in method
     """
     float_labels = df.columns.tolist()
-
     data_mice = fill_in.transform(df)
 
     data_mice = pd.DataFrame(data=data_mice)
     data_mice = data_mice.set_axis(float_labels, axis=1, inplace=False)
     return data_mice
+
+
+def get_stats_Nans_df(df):
+    # pd.set_option('display.max_columns', None)
+    print(f"Number of columns: {len(df.columns)}")
+    print(f"Number of rows: {len(df)}")
+    for column in df.columns:
+        if round(df[column].isnull().sum() / len(df), 2) > 0.75:
+            print(f"\t{column} = {df[column].isnull().sum()} ({round(df[column].isnull().sum() / len(df), 2)}%)")
+    # print(f"columns with missing values in df: {df.columns[df.isnull().any()].tolist()}")
+
+
+def remove_empty_columns(df):
+    num_rows = len(df)
+    list_cols = df.columns[df.isnull().sum() == num_rows].tolist()
+    print(f"Removing empty column: {list_cols}")
+    return df.drop(list_cols, axis=1), list_cols
 
 
 def apply_MICE(df, fit=False, imp_median=None, imp_mode=None):
@@ -89,8 +105,9 @@ def apply_MICE(df, fit=False, imp_median=None, imp_mode=None):
     if fit:
         imp_median = IterativeImputer(max_iter=10, tol=0.001, n_nearest_features=10, initial_strategy='median',
                                       skip_complete=False, verbose=2, add_indicator=False, random_state=0)
-
+        # print(df_floats.iloc[1:10,])
         imp_median.fit(df_floats)
+    get_stats_Nans_df(df_floats)
     data_mice_float = make_dataframe_MICE(df_floats, imp_median)
 
     df_nonfloats = df.select_dtypes(exclude="float")
@@ -99,6 +116,7 @@ def apply_MICE(df, fit=False, imp_median=None, imp_mode=None):
         imp_mode = IterativeImputer(max_iter=10, tol=0.001, n_nearest_features=10, initial_strategy='most_frequent',
                                     skip_complete=False, verbose=2, add_indicator=False, random_state=0)
         imp_mode.fit(df_nonfloats)
+    get_stats_Nans_df(df_nonfloats)
     data_mice_cat = make_dataframe_MICE(df_nonfloats, imp_mode)
 
     data_mice = pd.concat([data_mice_cat, data_mice_float], axis=1)
