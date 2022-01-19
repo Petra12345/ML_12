@@ -26,8 +26,8 @@ def remove_constant_columns(df):
     rm_columns = []
     for column in df.columns:
         if len(df[column].unique()) == 1:
-            print("Removing constant column: ", column)
             rm_columns.append(column)
+    print("Removing the following constant columns: ", rm_columns)
     df = df.drop(rm_columns, axis=1)
     return df, rm_columns
 
@@ -85,7 +85,7 @@ def get_stats_Nans_df(df):
 def remove_empty_columns(df):
     num_rows = len(df)
     list_cols = df.columns[df.isnull().sum() == num_rows].tolist()
-    print(f"Removing empty column: {list_cols}")
+    print(f"Removing the following empty columns: {list_cols}")
     return df.drop(list_cols, axis=1), list_cols
 
 

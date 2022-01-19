@@ -65,6 +65,23 @@ def make_random_forest_model(n_estimators=100):
     return ensemble.RandomForestClassifier(n_estimators=n_estimators)
 
 
+def add_metrics_to_df(df, y_validation, y_predictions, method, fold):
+    df = df.append({
+        "Fold": fold,
+        "Method": method,
+        "TP": metrics.confusion_matrix(y_validation, y_predictions)[1][1],
+        "FP": metrics.confusion_matrix(y_validation, y_predictions)[1][0],  # NOT SURE???
+        "FN": metrics.confusion_matrix(y_validation, y_predictions)[0][1],  # NOT SURE???
+        "TN": metrics.confusion_matrix(y_validation, y_predictions)[0][0],
+        "Precision": metrics.precision_score(y_validation, y_predictions),
+        "Recall": metrics.recall_score(y_validation, y_predictions),
+        "F1-score": metrics.f1_score(y_validation, y_predictions)
+    }, ignore_index=True)
+    print(metrics.confusion_matrix(y_validation, y_predictions))
+    print(metrics.confusion_matrix(y_validation, y_predictions)[0])
+    return df
+
+
 def cross_validation(data_raw, models_dict, k=2):
     """
     Perform cross_validation given features x and target y.
@@ -73,8 +90,10 @@ def cross_validation(data_raw, models_dict, k=2):
     :param k:                   Variable to determine k-fold cross validation
     """
     start = time.time()
-    kf = model_selection.KFold(n_splits=k, shuffle=True, random_state=1)
     iter = 0
+    df = pd.DataFrame(columns=["Fold", "Method", "TP", "FP", "FN", "TN",
+                               "Precision", "Recall", "F1-score"])
+    kf = model_selection.KFold(n_splits=k, shuffle=True, random_state=1)
 
     for train_i, val_i in kf.split(data_raw):
         start_fold = time.time()
@@ -85,6 +104,7 @@ def cross_validation(data_raw, models_dict, k=2):
         training_data, validation_data = data_raw.copy().iloc[train_i,], data_raw.copy().iloc[val_i,]
 
         print("\t---Data preprocessing---")
+        # TODO: Make function of all data preprocessing below
         # Extract target data
         y_train = np.array(training_data["TARGET"])
         training_data = training_data.drop(["TARGET"], axis=1)
@@ -125,7 +145,7 @@ def cross_validation(data_raw, models_dict, k=2):
         x_train, pca_func = perform_pca(x_train)
         x_validation = pca_func.transform(x_validation)
 
-        # TODO: Does order of PCA and SMOTE matter???
+        # TODO: Does order of applying PCA and SMOTE matter???
         # SMOTE
         smote = over_sampling.SMOTE(random_state=0)
         x_smote, y_smote = smote.fit_resample(x_train, y_train)
@@ -133,10 +153,11 @@ def cross_validation(data_raw, models_dict, k=2):
         for key, model in models_dict.items():
             print(f"\t\t---perform {key}...---")
             model.fit(x_smote, y_smote)
-            print(metrics.confusion_matrix(y_validation, model.predict(x_validation)))
-            print(metrics.f1_score(y_validation, model.predict(x_validation)))
-            print(metrics.classification_report(y_validation, model.predict(x_validation)))
+            y_predictions = model.predict(x_validation)
+            print(metrics.classification_report(y_validation, y_predictions))
+            df = add_metrics_to_df(df, y_validation, y_predictions, key, iter)
         print(f"Time taken for {iter}-th cross validation for all models: " + str(time.time() - start_fold) + " sec.\n")
     print("Time taken for cross validation for all models: " + str(time.time() - start) + " sec.")
+    df.to_csv("dataframe_cross_validation.csv")
     # Precision: How many retrieved items are relevant?
     # Recall: How many relevant items are retrieved?
