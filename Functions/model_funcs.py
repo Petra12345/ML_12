@@ -77,8 +77,6 @@ def add_metrics_to_df(df, y_validation, y_predictions, method, fold):
         "Recall": metrics.recall_score(y_validation, y_predictions),
         "F1-score": metrics.f1_score(y_validation, y_predictions)
     }, ignore_index=True)
-    print(metrics.confusion_matrix(y_validation, y_predictions))
-    print(metrics.confusion_matrix(y_validation, y_predictions)[0])
     return df
 
 
@@ -145,7 +143,6 @@ def cross_validation(data_raw, models_dict, k=2):
         x_train, pca_func = perform_pca(x_train)
         x_validation = pca_func.transform(x_validation)
 
-        # TODO: Does order of applying PCA and SMOTE matter???
         # SMOTE
         smote = over_sampling.SMOTE(random_state=0)
         x_smote, y_smote = smote.fit_resample(x_train, y_train)
