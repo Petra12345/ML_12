@@ -19,21 +19,22 @@ training_data_raw, testing_data_raw = train_test_split(df, test_size=0.1, random
 # print("---Pearson correlation---")
 # make_show_pearson_correlation(df)
 
-test = True
+test = False
 k_fold = 10
 
 # Cross-validation
 models_dict = {}
-for solver in ["liblinear"]:
-    models_dict[f"logreg: solver={solver}"] = make_lin_model(solver)
-
+# for solver in ["liblinear"]:
+#     models_dict[f"logreg: solver={solver}"] = make_lin_model(solver)
+#
 if not test:
-    for criterion, splitter in itertools.product(["gini", "entropy"], ["best", "random"]):
-        models_dict[f"dectree: criterion={criterion} and splitter={splitter}"] = make_decision_tree_model(criterion,
-                                                                                                          splitter)
+#     for criterion, splitter in itertools.product(["gini", "entropy"], ["best", "random"]):
+#         models_dict[f"dectree: criterion={criterion} and splitter={splitter}"] = make_decision_tree_model(criterion,
+#                                                                                                           splitter)
 
-    for n_estimators in [50, 100, 150, 200]:
-        models_dict[f"randfor: n_estimators={n_estimators}"] = make_random_forest_model(n_estimators)
+    for n_estimators in [50, 100, 150]:
+        random_state = 0
+        models_dict[f"randfor: n_estimators={n_estimators}"] = make_random_forest_model(n_estimators, random_state)
 
 # Criteria RF?
 print(models_dict)

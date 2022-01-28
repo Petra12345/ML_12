@@ -25,7 +25,7 @@ def remove_constant_columns(df):
     """
     rm_columns = []
     for column in df.columns:
-        if len(df[column].unique()) == 1:
+        if len(df[column].unique()) == 1 and column != "TARGET":
             rm_columns.append(column)
     print("Removing the following constant columns: ", rm_columns)
     df = df.drop(rm_columns, axis=1)
