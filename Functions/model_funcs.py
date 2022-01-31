@@ -62,8 +62,8 @@ def plot_decision_tree(model):
     plt.show()
 
 
-def make_random_forest_model(n_estimators=100, random_state=0):
-    return ensemble.RandomForestClassifier(n_estimators=n_estimators, random_state=random_state)
+def make_random_forest_model(n_estimators=100, random_state=0, max_depth=None, min_samples_split=2):
+    return ensemble.RandomForestClassifier(n_estimators=n_estimators, random_state=random_state, max_depth=max_depth, min_samples_split=min_samples_split)
 
 # TODO: do we want only want scores for 1.0 category?
 def add_metrics_to_df(df, y_validation, y_predictions, method, fold):
@@ -171,6 +171,8 @@ def cross_validation(data_raw, models_dict, k=2):
             print(f"\t\t---perform {key}...---")
             model_list.append(key)
             model.fit(x_smote, y_smote)
+            # tree_depths = [estimator.tree_.max_depth for estimator in model.estimators_]
+            # print("Tree depths are:", tree_depths)
             y_predictions = model.predict(x_validation)
             print(metrics.classification_report(y_validation, y_predictions))
             df = add_metrics_to_df(df, y_validation, y_predictions, key, iter)
