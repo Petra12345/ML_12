@@ -19,24 +19,26 @@ training_data_raw, testing_data_raw = train_test_split(df, test_size=0.1, random
 # print("---Pearson correlation---")
 # make_show_pearson_correlation(df)
 
-test = False
+test = True
 k_fold = 5
 
 # Cross-validation
 models_dict = {}
-# for solver in ["liblinear"]:
-#     models_dict[f"logreg: solver={solver}"] = make_lin_model(solver)
-#
-
 
 if not test:
-#     for criterion, splitter in itertools.product(["gini", "entropy"], ["best", "random"]):
-#         models_dict[f"dectree: criterion={criterion} and splitter={splitter}"] = make_decision_tree_model(criterion,
-#                                                                                                           splitter)
+    #     for criterion, splitter in itertools.product(["gini", "entropy"], ["best", "random"]):
+    #         models_dict[f"dectree: criterion={criterion} and splitter={splitter}"] = make_decision_tree_model(criterion,
+    #                                                                                                           splitter)
+    for solver, alpha in itertools.product(["liblinear", "saga"],
+                                           [0.0000001, 0.00001, 0.001, 0.1, 10, 1000, 100000, 10000000,
+                                            100000000000000]):
+        models_dict[f"logreg: solver={solver} alpha={alpha}"] = make_lin_model(solver, alpha)
 
-    for n_estimators, max_depth, min_samples_split in itertools.product([50,100], [20, 50, 80], [2,4,8,16]):
+    for n_estimators, max_depth, min_samples_split in itertools.product([50, 100], [20, 50, 80], [2, 4, 8, 16]):
         random_state = 0
-        models_dict[f"randfor: n_estimators={n_estimators} max_depth={max_depth} min_samples_split={min_samples_split}"] = make_random_forest_model(n_estimators, random_state, max_depth, min_samples_split)
+        models_dict[
+            f"randfor: n_estimators={n_estimators} max_depth={max_depth} min_samples_split={min_samples_split}"] = make_random_forest_model(
+            n_estimators, random_state, max_depth, min_samples_split)
 
 # Criteria RF?
 print(models_dict)

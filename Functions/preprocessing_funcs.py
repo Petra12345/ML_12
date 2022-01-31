@@ -106,7 +106,7 @@ def apply_MICE(df, fit=False, imp_median=None, imp_mode=None):
         imp_mode = None
 
     df_floats = df.select_dtypes("float")
-    print(f"number of columns of floats: {len(df_floats.columns)}")
+    # print(f"number of columns of floats: {len(df_floats.columns)}")
     if fit:
         imp_median = IterativeImputer(max_iter=10, tol=0.001, n_nearest_features=10, initial_strategy='median',
                                       skip_complete=False, verbose=0, add_indicator=False, random_state=0)
@@ -114,7 +114,7 @@ def apply_MICE(df, fit=False, imp_median=None, imp_mode=None):
     data_mice_float = make_dataframe_MICE(df_floats, imp_median)
 
     df_nonfloats = df.select_dtypes(exclude="float")
-    print(f"number of columns of nonfloats: {len(df_nonfloats.columns)}")
+    # print(f"number of columns of nonfloats: {len(df_nonfloats.columns)}")
     if fit:
         imp_mode = IterativeImputer(max_iter=10, tol=0.001, n_nearest_features=10, initial_strategy='most_frequent',
                                     skip_complete=False, verbose=2, add_indicator=False, random_state=0)
