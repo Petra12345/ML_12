@@ -10,7 +10,7 @@ from sklearn.pipeline import make_pipeline
 from sklearn.metrics import confusion_matrix
 
 from Functions.preprocessing_funcs import remove_constant_columns, apply_MICE, \
-    normalize_data, perform_pca, remove_empty_columns, normalize_test_data
+    normalize_data, perform_pca, remove_empty_columns, normalize_test_data, data_preprocessing
 
 
 def anova_feature_selection(X, target, num_features=20):
@@ -43,17 +43,11 @@ def make_show_pearson_correlation(df):
     plt.show()
 
 
-def print_baseline(y_test):
-    return
-    num_1 = sum(y_test)
-    num_0 = len(y_test) - num_1
-
-
-def make_lin_model(solver="liblinear", alpha=1, regularizer="I2"):
+def make_lin_model(solver="liblinear", C=1, penalty="I2"):
     if regularizer == "none":
-        return_model = linear_model.LogisticRegression(solver=solver, penalty=regularizer)
+        return_model = linear_model.LogisticRegression(solver=solver, penalty=penalty)
     else:
-        return_model = linear_model.LogisticRegression(solver=solver, C=alpha, random_state=0)
+        return_model = linear_model.LogisticRegression(solver=solver, C=C, penalty=penalty, random_state=0)
     return return_model
 
 
@@ -71,7 +65,6 @@ def make_random_forest_model(n_estimators=100, random_state=0, max_depth=None, m
                                            min_samples_split=min_samples_split)
 
 
-# TODO: do we want only want scores for 1.0 category?
 def add_metrics_to_df(df, y_validation, y_predictions, method, fold):
     df = df.append({
         "Fold": fold,
@@ -119,53 +112,6 @@ def make_average_sheet(models_dict, df):
     av_data.to_csv("average_dataframe_cross_validation.csv")
 
 
-def data_preprocessing(training_data, validation_data):
-    # TODO: Make function of all data preprocessing below
-
-    # One hot encode data
-    one_hot_encoded_training_data = pd.get_dummies(training_data, dtype=int)
-    one_hot_encoded_validation_data = pd.get_dummies(validation_data, dtype=int)
-    training_data, validation_data = one_hot_encoded_training_data.align(one_hot_encoded_validation_data,
-                                                                         join='right', axis=1)
-
-    # Remove empty columns
-    training_data, rm_columns = remove_empty_columns(training_data)
-    validation_data = validation_data.drop(rm_columns, axis=1)
-
-    # Apply MICE
-    print("\t---Apply MICE---")
-    training_data, imp_median, imp_mode = apply_MICE(training_data, fit=True)
-    validation_data, _, _ = apply_MICE(validation_data, fit=False, imp_median=imp_median, imp_mode=imp_mode)
-
-    # Remove constant columns
-    training_data, rm_columns = remove_constant_columns(training_data)
-    validation_data = validation_data.drop(rm_columns, axis=1)
-
-    # Normalize data
-    training_data, norm_columns_dict = normalize_data(training_data)
-    validation_data = normalize_test_data(validation_data, norm_columns_dict)
-
-    # Extract target data
-    y_train = np.array(training_data["TARGET"])
-    training_data = training_data.drop(["TARGET"], axis=1)
-    y_validation = np.array(validation_data["TARGET"])
-    validation_data = validation_data.drop(["TARGET"], axis=1)
-
-    x_train = np.array(training_data.iloc[:, 1:])
-    x_validation = np.array(validation_data.iloc[:, 1:])
-
-    # PCA
-    print("\t---PCA---")
-    x_train, pca_func = perform_pca(x_train, k=0.99)
-    x_validation = pca_func.transform(x_validation)
-
-    # SMOTE
-    smote = over_sampling.SMOTE(random_state=0)
-    x_smote, y_smote = smote.fit_resample(x_train, y_train)
-
-    return x_smote, y_smote, x_validation, y_validation
-
-
 def cross_validation(data_raw, models_dict, k=2):
     """
     Perform cross_validation given features x and target y.
@@ -196,11 +142,11 @@ def cross_validation(data_raw, models_dict, k=2):
             # tree_depths = [estimator.tree_.max_depth for estimator in model.estimators_]
             # print("Tree depths are:", tree_depths)
             y_predictions = model.predict(x_validation)
-            print(metrics.classification_report(y_validation, y_predictions))
             df = add_metrics_to_df(df, y_validation, y_predictions, key, iter)
 
-            print("---Training error---")
-            print(metrics.classification_report(y_train, model.predict(x_train)))
+            print(metrics.classification_report(y_validation, y_predictions))
+            print(f"\t\tTraining f1-score: {metrics.f1_score(y_train, model.predict(x_train))}")
+
         print(f"Time taken for {iter}-th cross validation for all models: " + str(time.time() - start_fold) + " sec.\n")
     print("Time taken for cross validation for all models: " + str(time.time() - start) + " sec.")
 

@@ -14,15 +14,15 @@ k_fold = 5
 
 regularizers = ["I2"]
 solvers = ["liblinear", "saga"]
-alphas = [0.000001, 0.00001, 0.0001, 0.001, 0.01, 0.1, 1, 10, 100, 1000, 10000]
+lambdas = [0.000001, 0.00001, 0.0001, 0.001, 0.01, 0.1, 1, 10, 100, 1000, 10000]
 
-models = [item for item in itertools.product(regularizers, solvers, alphas)]
+models = [item for item in itertools.product(regularizers, solvers, lambdas)]
 models.append(("none", "saga", None))
 
 # Cross-validation
 models_dict = {}
-for regularizer, solver, alpha in models:
-    models_dict[f"logreg: regularizer={regularizer} solver={solver} alpha={alpha}"] = make_lin_model(solver, alpha, regularizer)
+for regularizer, solver, C in models:
+    models_dict[f"logreg: regularizer={regularizer} solver={solver} C={C}"] = make_lin_model(solver, C, regularizer)
 
 start = time.time()
 iter = 0
@@ -62,7 +62,7 @@ for train_i, val_i in kf.split(training_data_raw):
     print(f"Time taken for {iter}-th cross validation for all models: " + str(time.time() - start_fold) + " sec.\n")
 print("Time taken for cross validation for all models: " + str(time.time() - start) + " sec.")
 
-df.to_csv("dataframe_cross_validation.csv")
+df.to_csv("dataframe_cross_validation_logreg.csv")
 
 columns = ["Method", "F1-score validation", "F1-score training"]
 av_data = pd.DataFrame(columns=columns)
@@ -76,4 +76,4 @@ for model in models_dict:
         "F1-score training": av_f1_train
     }, ignore_index=True)
 
-av_data.to_csv("average_dataframe_cross_validation.csv")
+av_data.to_csv("average_dataframe_cross_validation_logreg.csv")

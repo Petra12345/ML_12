@@ -1,11 +1,10 @@
 # Import packages
 import pandas as pd
 import numpy as np
+from imblearn import over_sampling
 from sklearn.decomposition import PCA
 from sklearn.experimental import enable_iterative_imputer
 from sklearn.impute import IterativeImputer
-from sklearn.preprocessing import Normalizer
-import time
 
 
 def load_data(file_name='Data/application_data/application_data.csv'):
@@ -168,6 +167,51 @@ def perform_pca(x, k=0.9):
     # print(np.array([x_pca.explained_variance_ratio_[:i].sum() for i in range(1, k+1)]).round(2))
     # print(x_pca.explained_variance_ratio_)
     return x_pca, pca_func
+
+
+def data_preprocessing(training_data, validation_data):
+    # One hot encode data
+    one_hot_encoded_training_data = pd.get_dummies(training_data, dtype=int)
+    one_hot_encoded_validation_data = pd.get_dummies(validation_data, dtype=int)
+    training_data, validation_data = one_hot_encoded_training_data.align(one_hot_encoded_validation_data,
+                                                                         join='right', axis=1)
+
+    # Remove empty columns
+    training_data, rm_columns = remove_empty_columns(training_data)
+    validation_data = validation_data.drop(rm_columns, axis=1)
+
+    # Apply MICE
+    print("\t---Apply MICE---")
+    training_data, imp_median, imp_mode = apply_MICE(training_data, fit=True)
+    validation_data, _, _ = apply_MICE(validation_data, fit=False, imp_median=imp_median, imp_mode=imp_mode)
+
+    # Remove constant columns
+    training_data, rm_columns = remove_constant_columns(training_data)
+    validation_data = validation_data.drop(rm_columns, axis=1)
+
+    # Normalize data
+    training_data, norm_columns_dict = normalize_data(training_data)
+    validation_data = normalize_test_data(validation_data, norm_columns_dict)
+
+    # Extract target data
+    y_train = np.array(training_data["TARGET"])
+    training_data = training_data.drop(["TARGET"], axis=1)
+    y_validation = np.array(validation_data["TARGET"])
+    validation_data = validation_data.drop(["TARGET"], axis=1)
+
+    x_train = np.array(training_data.iloc[:, 1:])
+    x_validation = np.array(validation_data.iloc[:, 1:])
+
+    # PCA
+    print("\t---PCA---")
+    x_train, pca_func = perform_pca(x_train, k=0.99)
+    x_validation = pca_func.transform(x_validation)
+
+    # SMOTE
+    smote = over_sampling.SMOTE(random_state=0)
+    x_smote, y_smote = smote.fit_resample(x_train, y_train)
+
+    return x_smote, y_smote, x_validation, y_validation
 
 # def replace_nans_with_mode(df):
 #     for column in df:
