@@ -27,7 +27,8 @@ for regularizer, solver, C in models:
 start = time.time()
 iter = 0
 df = pd.DataFrame(columns=["Fold", "Method", "F1-score validation", "F1-score training",
-                           "Loss validation", "Loss training", "Accuracy validation", "Accuracy training"])
+                           "Loss validation", "Loss training", "Accuracy validation", "Accuracy training",
+                           "Precision", "Recall", "TP", "FN", "FP", "TN"])
 kf = model_selection.KFold(n_splits=k_fold, shuffle=True, random_state=0)
 
 for train_i, val_i in kf.split(training_data_raw):
@@ -58,16 +59,20 @@ for train_i, val_i in kf.split(training_data_raw):
             "Method": key,
             "F1-score validation": metrics.f1_score(y_validation, y_predictions),
             "F1-score training": metrics.f1_score(y_train, y_train_predictions),
-            "Loss validation": metrics.log_loss(y_validation, y_predictions),
-            "Loss training": metrics.log_loss(y_train, y_train_predictions),
             "Accuracy validation": metrics.accuracy_score(y_validation, y_predictions),
-            "Accuracy training": metrics.accuracy_score(y_train, y_train_predictions)
+            "Accuracy training": metrics.accuracy_score(y_train, y_train_predictions),
+            "Precision": metrics.precision_score(y_validation, y_predictions),
+            "Recall": metrics.recall_score(y_validation, y_predictions),
+            "TP": metrics.confusion_matrix(y_validation, y_predictions)[1][1],
+            "FN": metrics.confusion_matrix(y_validation, y_predictions)[1][0],
+            "FP": metrics.confusion_matrix(y_validation, y_predictions)[0][1],
+            "TN": metrics.confusion_matrix(y_validation, y_predictions)[0][0],
         }, ignore_index=True)
 
     print(f"Time taken for {iter}-th cross validation for all models: " + str(time.time() - start_fold) + " sec.\n")
 print("Time taken for cross validation for all models: " + str(time.time() - start) + " sec.")
 
-df.to_csv("dataframe_cross_validation_logreg.csv")
+df.to_csv("dataframe_cross_validation_logreg_all.csv")
 
 columns = ["Method", "F1-score validation", "F1-score training", "Loss validation", "Loss training",
            "Accuracy validation", "Accuracy training", "Precision", "Recall", "TP", "FP", "FN", "TN"]
@@ -103,5 +108,5 @@ for model in models_dict:
         "TN": av_tn
     }, ignore_index=True)
 
-av_data.to_csv("average_dataframe_cross_validation_logreg.csv")
+av_data.to_csv("average_dataframe_cross_validation_logreg_all.csv")
 
