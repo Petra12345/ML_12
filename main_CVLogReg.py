@@ -49,10 +49,10 @@ for train_i, val_i in kf.split(training_data_raw):
         y_train_predictions = model.predict(x_train)
 
         print("\t\t---Validation error---")
-        print(metrics.classification_report(y_validation, y_predictions))
+        print(metrics.f1_score(y_validation, y_predictions))
 
         print("\t\t---Training error---")
-        print(metrics.classification_report(y_train, y_train_predictions))
+        print(metrics.f1_score(y_train, y_train_predictions))
 
         df = df.append({
             "Fold": iter,

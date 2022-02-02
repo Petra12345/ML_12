@@ -144,7 +144,7 @@ def cross_validation(data_raw, models_dict, k=2):
             y_predictions = model.predict(x_validation)
             df = add_metrics_to_df(df, y_validation, y_predictions, key, iter)
 
-            print(metrics.classification_report(y_validation, y_predictions))
+            print(f"\t\tValidation f1-score: {metrics.f1_score(y_validation, y_predictions)}")
             print(f"\t\tTraining f1-score: {metrics.f1_score(y_train, model.predict(x_train))}")
 
         print(f"Time taken for {iter}-th cross validation for all models: " + str(time.time() - start_fold) + " sec.\n")
