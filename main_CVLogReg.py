@@ -77,3 +77,4 @@ for model in models_dict:
     }, ignore_index=True)
 
 av_data.to_csv("average_dataframe_cross_validation_logreg.csv")
+
