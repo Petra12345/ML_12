@@ -51,8 +51,8 @@ def make_lin_model(solver="liblinear", C=1, penalty="I2"):
     return return_model
 
 
-def make_decision_tree_model(criterion="gini", splitter="best"):
-    return tree.DecisionTreeClassifier(criterion=criterion, splitter=splitter)
+def make_decision_tree_model(criterion="gini", splitter="best", max_depth=None, min_samples_split=2):
+    return tree.DecisionTreeClassifier(criterion=criterion, splitter=splitter, max_depth=max_depth, min_samples_split=min_samples_split)
 
 
 def plot_decision_tree(model):
