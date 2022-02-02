@@ -14,7 +14,7 @@ k_fold = 5
 
 criteria = ["gini"]
 splitters = ["best"]
-max_depth = [10, 15, 20, 25, 30]
+max_depth = [3, 5, 8, 10, 15, 20, 25, 30]
 min_samples_split = [2]
 
 models = [item for item in itertools.product(criteria, splitters, max_depth, min_samples_split)]

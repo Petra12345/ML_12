@@ -7,4 +7,8 @@ df = load_data()
 
 # perform pearson correlation
 print("---Pearson correlation---")
-make_show_pearson_correlation(df)
+correlations = make_show_pearson_correlation(df)
+
+largest_target = correlations.nlargest(2,'TARGET')
+largest_general = correlations.nlargest(5, 'YEARS_BUILD_AVG')
+
