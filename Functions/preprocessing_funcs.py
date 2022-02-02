@@ -160,7 +160,6 @@ def perform_pca(x, k=0.9):
     # plt.legend(["Variance explained per PC", "Total variance explained"])
     # plt.show()
 
-    # TODO: miss number of components bepalen aan de hand van expl variance
     pca_func = PCA(n_components=k, svd_solver='full')
     pca_func.fit(x)
     x_pca = pca_func.transform(x)

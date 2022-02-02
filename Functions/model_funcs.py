@@ -45,7 +45,7 @@ def make_show_pearson_correlation(df):
     return correlations
 
 
-def make_lin_model(solver="liblinear", C=1, penalty="I2"):
+def make_lin_model(solver="liblinear", C=1, penalty="l2"):
     if penalty == "none":
         return_model = linear_model.LogisticRegression(solver=solver, penalty=penalty)
     else:

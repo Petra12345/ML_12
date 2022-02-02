@@ -12,7 +12,7 @@ df = load_data()
 training_data_raw, testing_data_raw = train_test_split(df, test_size=0.1, random_state=0)
 k_fold = 5
 
-regularizers = ["I2"]
+regularizers = ["l2"]
 solvers = ["saga"]
 lambdas = [1e-14, 0.000001, 0.00001, 0.0001, 0.001, 0.01, 0.1, 1, 10, 100, 1000, 10000, 1e14]
 
@@ -61,6 +61,8 @@ for train_i, val_i in kf.split(training_data_raw):
             "F1-score training": metrics.f1_score(y_train, y_train_predictions),
             "Accuracy validation": metrics.accuracy_score(y_validation, y_predictions),
             "Accuracy training": metrics.accuracy_score(y_train, y_train_predictions),
+            "Loss validation": metrics.log_loss(y_validation, y_predictions),
+            "Loss training": metrics.log_loss(y_validation, y_predictions),
             "Precision": metrics.precision_score(y_validation, y_predictions),
             "Recall": metrics.recall_score(y_validation, y_predictions),
             "TP": metrics.confusion_matrix(y_validation, y_predictions)[1][1],
