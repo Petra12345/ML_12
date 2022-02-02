@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 
-df = pd.read_csv("average_dataframe_cross_validation_logisticreg.csv", index_col=0)
+df = pd.read_csv("dataframe_cross_validation_logisticreg.csv", index_col=0)
 
 # %%
 pd.set_option('display.max_columns', 1000)

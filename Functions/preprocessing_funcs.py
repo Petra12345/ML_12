@@ -204,7 +204,7 @@ def data_preprocessing(training_data, validation_data):
 
     # PCA
     print("\t---PCA---")
-    x_train, pca_func = perform_pca(x_train, k=0.99)
+    x_train, pca_func = perform_pca(x_train, k=0.9)
     x_validation = pca_func.transform(x_validation)
 
     # SMOTE

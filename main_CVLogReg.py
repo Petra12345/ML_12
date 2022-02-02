@@ -13,8 +13,8 @@ training_data_raw, testing_data_raw = train_test_split(df, test_size=0.1, random
 k_fold = 5
 
 regularizers = ["I2"]
-solvers = ["liblinear", "saga"]
-lambdas = [0.000001, 0.00001, 0.0001, 0.001, 0.01, 0.1, 1, 10, 100, 1000, 10000]
+solvers = ["saga"]
+lambdas = [1e-14, 0.000001, 0.00001, 0.0001, 0.001, 0.01, 0.1, 1, 10, 100, 1000, 10000, 1e14]
 
 models = [item for item in itertools.product(regularizers, solvers, lambdas)]
 models.append(("none", "saga", None))
@@ -26,7 +26,8 @@ for regularizer, solver, C in models:
 
 start = time.time()
 iter = 0
-df = pd.DataFrame(columns=["Fold", "Method", "F1-score validation", "F1-score training"])
+df = pd.DataFrame(columns=["Fold", "Method", "F1-score validation", "F1-score training",
+                           "Loss validation", "Loss training", "Accuracy validation", "Accuracy training"])
 kf = model_selection.KFold(n_splits=k_fold, shuffle=True, random_state=0)
 
 for train_i, val_i in kf.split(training_data_raw):
@@ -56,7 +57,11 @@ for train_i, val_i in kf.split(training_data_raw):
             "Fold": iter,
             "Method": key,
             "F1-score validation": metrics.f1_score(y_validation, y_predictions),
-            "F1-score training": metrics.f1_score(y_train, y_train_predictions)
+            "F1-score training": metrics.f1_score(y_train, y_train_predictions),
+            "Loss validation": metrics.log_loss(y_validation, y_predictions),
+            "Loss training": metrics.log_loss(y_train, y_train_predictions),
+            "Accuracy validation": metrics.accuracy_score(y_validation, y_predictions),
+            "Accuracy training": metrics.accuracy_score(y_train, y_train_predictions)
         }, ignore_index=True)
 
     print(f"Time taken for {iter}-th cross validation for all models: " + str(time.time() - start_fold) + " sec.\n")
@@ -64,16 +69,38 @@ print("Time taken for cross validation for all models: " + str(time.time() - sta
 
 df.to_csv("dataframe_cross_validation_logreg.csv")
 
-columns = ["Method", "F1-score validation", "F1-score training"]
+columns = ["Method", "F1-score validation", "F1-score training", "Loss validation", "Loss training",
+           "Accuracy validation", "Accuracy training", "Precision", "Recall", "TP", "FP", "FN", "TN"]
 av_data = pd.DataFrame(columns=columns)
 
 for model in models_dict:
     av_f1_val = df.loc[df['Method'] == model]["F1-score validation"].mean()
     av_f1_train = df.loc[df['Method'] == model]["F1-score training"].mean()
+    av_loss_val = df.loc[df['Method'] == model]["Loss validation"].mean()
+    av_loss_train = df.loc[df['Method'] == model]["Loss training"].mean()
+    av_acc_val = df.loc[df['Method'] == model]["Accuracy validation"].mean()
+    av_acc_train = df.loc[df['Method'] == model]["Accuracy training"].mean()
+    av_precision = df.loc[df['Method'] == model]["Precision"].mean()
+    av_recall = df.loc[df['Method'] == model]["Recall"].mean()
+    av_tp = df.loc[df['Method'] == model]["TP"].mean()
+    av_fp = df.loc[df['Method'] == model]["FP"].mean()
+    av_fn = df.loc[df['Method'] == model]["FN"].mean()
+    av_tn = df.loc[df['Method'] == model]["TN"].mean()
+
     av_data = av_data.append({
         "Method": model,
         "F1-score validation": av_f1_val,
-        "F1-score training": av_f1_train
+        "F1-score training": av_f1_train,
+        "Loss validation": av_loss_val,
+        "Loss training": av_loss_train,
+        "Accuracy validation": av_acc_val,
+        "Accuracy training": av_acc_train,
+        "Precision": av_precision,
+        "Recall": av_recall,
+        "TP": av_tp,
+        "FN": av_fn,
+        "FP": av_fp,
+        "TN": av_tn
     }, ignore_index=True)
 
 av_data.to_csv("average_dataframe_cross_validation_logreg.csv")
