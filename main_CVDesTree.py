@@ -12,10 +12,10 @@ df = load_data()
 training_data_raw, testing_data_raw = train_test_split(df, test_size=0.1, random_state=0)
 k_fold = 5
 
-criteria = ["gini", "entropy"]
-splitters = ["best", "random"]
-max_depth = [20, 60, 80, 100, None]
-min_samples_split = [2, 4, 8, 16]
+criteria = ["gini"]
+splitters = ["best"]
+max_depth = [10, 15, 20, 25, 30]
+min_samples_split = [2]
 
 models = [item for item in itertools.product(criteria, splitters, max_depth, min_samples_split)]
 
@@ -64,7 +64,7 @@ for train_i, val_i in kf.split(training_data_raw):
     print(f"Time taken for {iter}-th cross validation for all models: " + str(time.time() - start_fold) + " sec.\n")
 print("Time taken for cross validation for all models: " + str(time.time() - start) + " sec.")
 
-df.to_csv("dataframe_cross_validation_dectree.csv")
+df.to_csv("dataframe_cross_validation_dectree_depth.csv")
 
 columns = ["Method", "F1-score validation", "F1-score training"]
 av_data = pd.DataFrame(columns=columns)
@@ -78,4 +78,4 @@ for model in models_dict:
         "F1-score training": av_f1_train
     }, ignore_index=True)
 
-av_data.to_csv("average_dataframe_cross_validation_dectree.csv")
+av_data.to_csv("average_dataframe_cross_validation_dectree_depth.csv")
