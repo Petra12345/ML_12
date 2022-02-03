@@ -14,7 +14,7 @@ k_fold = 5
 
 criteria = ["gini"]
 splitters = ["best"]
-max_depth = [3, 5, 8, 10, 15, 20, 25, 30]
+max_depth = [1, 2, 3]
 min_samples_split = [2]
 
 models = [item for item in itertools.product(criteria, splitters, max_depth, min_samples_split)]
@@ -49,10 +49,10 @@ for train_i, val_i in kf.split(training_data_raw):
         y_predictions = model.predict(x_validation)
         y_train_predictions = model.predict(x_train)
 
-        print("\t\t---Validation error---")
+        print("\t\t---Validation f1-score---")
         print(metrics.f1_score(y_validation, y_predictions))
 
-        print("\t\t---Training error---")
+        print("\t\t---Training f1-score---")
         print(metrics.f1_score(y_train, y_train_predictions))
 
         df = df.append({
