@@ -42,6 +42,8 @@ def make_show_pearson_correlation(df):
                 annot=False, cbar_kws={"shrink": .7})
     plt.show()
 
+    return correlations
+
 
 def make_lin_model(solver="liblinear", C=1, penalty="l2"):
     if penalty == "none":
