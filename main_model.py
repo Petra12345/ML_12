@@ -7,13 +7,14 @@ from Functions.preprocessing_funcs import *
 # Settings
 dectree_criterion = "gini"
 dectree_splitter = "best"
+dectree_max_depth = 10
 ranfor_n_estimators = 100
 ranfor_random_state = 0
-ranfor_max_depth = None
+ranfor_max_depth = 20
 ranfor_min_samples_split = 2
 logreg_solver = "saga"
-logreg_C = 1
-logreg_penalty = "I2"
+logreg_C = 0.1
+logreg_penalty = "l2"
 
 # Load data and some initial data processing
 print("---Load data---")
@@ -31,7 +32,7 @@ training_data_raw, testing_data_raw = train_test_split(df, test_size=0.1, random
 x_train, y_train, x_test, y_test = data_preprocessing(training_data_raw, testing_data_raw)
 
 # Make models
-decision_tree = make_decision_tree_model(criterion=dectree_criterion, splitter=dectree_splitter)
+decision_tree = make_decision_tree_model(criterion=dectree_criterion, splitter=dectree_splitter, max_depth=dectree_max_depth)
 random_forest = make_random_forest_model(n_estimators=ranfor_n_estimators, random_state=ranfor_random_state,
                                          max_depth=ranfor_max_depth, min_samples_split=ranfor_min_samples_split)
 logistic_reg = make_lin_model(solver=logreg_solver, C=logreg_C, penalty=logreg_penalty)
@@ -45,13 +46,28 @@ random_forest.fit(x_train, y_train)
 print("---Logistic regression---")
 y_predictions = logistic_reg.predict(x_test)
 print(metrics.classification_report(y_test, y_predictions))
+print(metrics.f1_score(y_test, y_predictions))
+print(metrics.confusion_matrix(y_test, y_predictions))
+print(metrics.precision_score(y_test, y_predictions))
+print(metrics.recall_score(y_test, y_predictions))
+print(metrics.accuracy_score(y_test, y_predictions))
 
 # Decision tree
 print("---Decision tree---")
 y_predictions = decision_tree.predict(x_test)
 print(metrics.classification_report(y_test, y_predictions))
+print(metrics.f1_score(y_test, y_predictions))
+print(metrics.confusion_matrix(y_test, y_predictions))
+print(metrics.precision_score(y_test, y_predictions))
+print(metrics.recall_score(y_test, y_predictions))
+print(metrics.accuracy_score(y_test, y_predictions))
 
 # Random forest
 print("---Random forest---")
 y_predictions = random_forest.predict(x_test)
 print(metrics.classification_report(y_test, y_predictions))
+print(metrics.f1_score(y_test, y_predictions))
+print(metrics.confusion_matrix(y_test, y_predictions))
+print(metrics.precision_score(y_test, y_predictions))
+print(metrics.recall_score(y_test, y_predictions))
+print(metrics.accuracy_score(y_test, y_predictions))
