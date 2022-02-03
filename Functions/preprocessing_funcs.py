@@ -198,6 +198,9 @@ def data_preprocessing(training_data, validation_data):
     y_validation = np.array(validation_data["TARGET"])
     validation_data = validation_data.drop(["TARGET"], axis=1)
 
+    # Save for PCA analysis
+    x_pca = training_data
+
     x_train = np.array(training_data.iloc[:, 1:])
     x_validation = np.array(validation_data.iloc[:, 1:])
 
@@ -210,7 +213,7 @@ def data_preprocessing(training_data, validation_data):
     smote = over_sampling.SMOTE(random_state=0)
     x_smote, y_smote = smote.fit_resample(x_train, y_train)
 
-    return x_smote, y_smote, x_validation, y_validation
+    return x_smote, y_smote, x_validation, y_validation, pca_func, x_pca
 
 # def replace_nans_with_mode(df):
 #     for column in df:

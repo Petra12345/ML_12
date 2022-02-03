@@ -41,7 +41,7 @@ for train_i, val_i in kf.split(training_data_raw):
     training_data, validation_data = training_data_raw.copy().iloc[train_i,], training_data_raw.copy().iloc[val_i,]
 
     print("\t---Data preprocessing---")
-    x_train, y_train, x_validation, y_validation = data_preprocessing(training_data, validation_data)
+    x_train, y_train, x_validation, y_validation, _, _ = data_preprocessing(training_data, validation_data)
 
     for key, model in models_dict.items():
         print(f"\t\t---perform {key}...---")

@@ -40,7 +40,7 @@ for train_i, val_i in kf.split(training_data_raw):
     training_data, validation_data = training_data_raw.copy().iloc[train_i,], training_data_raw.copy().iloc[val_i,]
 
     print("\t---Data preprocessing---")
-    x_train, y_train, x_validation, y_validation = data_preprocessing(training_data, validation_data)
+    x_train, y_train, x_validation, y_validation, _, _ = data_preprocessing(training_data, validation_data)
 
     for key, model in models_dict.items():
         print(f"\t\t---perform {key}...---")
@@ -62,7 +62,7 @@ for train_i, val_i in kf.split(training_data_raw):
             "Accuracy validation": metrics.accuracy_score(y_validation, y_predictions),
             "Accuracy training": metrics.accuracy_score(y_train, y_train_predictions),
             "Loss validation": metrics.log_loss(y_validation, y_predictions),
-            "Loss training": metrics.log_loss(y_validation, y_predictions),
+            "Loss training": metrics.log_loss(y_train, y_train_predictions),
             "Precision": metrics.precision_score(y_validation, y_predictions),
             "Recall": metrics.recall_score(y_validation, y_predictions),
             "TP": metrics.confusion_matrix(y_validation, y_predictions)[1][1],
