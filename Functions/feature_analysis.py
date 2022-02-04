@@ -14,11 +14,11 @@ def interpret_PCA(pca_func, x_pca):
     return df
 
 def interpret_logreg(logreg_model):
-    df = pd.DataFrame(columns=["Principal Component Vector", "Feature Importance"])
     importance = logreg_model.coef_
-    for i, v in enumerate(importance):
-        df = df.append({
-            "Principal Component Vector": i,
-            "Feature Importance": v
-        }, ignore_index=True)
+    importance_features = []
+    for sublist in importance:
+        for item in sublist:
+            importance_features.append(item)
+    df = pd.DataFrame(importance_features, columns=["Class importance"])
+    df.insert(0, 'Principal Component Vector Number', range(1, 1+len(df)))
     return df
