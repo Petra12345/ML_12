@@ -3,12 +3,11 @@ import pandas as pd
 import numpy as np
 
 def interpret_tree(RF_model, test_data):
-    df = pd.DataFrame()
+
     prediction, bias, contributions = ti.predict(RF_model, test_data)
-    df = df.append({
-        "Bias": bias[0],
-        "Contributions": np.mean(contributions, axis=0)
-    }, ignore_index=True)
+    contributions = np.mean(contributions, axis=0)
+    df = pd.DataFrame(contributions, columns=["class1","class2"]) #TODO: We do not know what is class1 and class 2
+    df.insert(0, 'Principal Component Vector Number', range(1, 1+len(df)))
     return df
 
 def interpret_PCA(pca_func, x_pca):
