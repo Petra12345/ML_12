@@ -169,11 +169,12 @@ def perform_pca(x, k=0.9):
 
 
 def data_preprocessing(training_data, validation_data):
+    training_data = training_data.drop(["SK_ID_CURR"], axis=1)  # remove ID
+    validation_data = validation_data.drop(["SK_ID_CURR"], axis=1)  # remove ID
     # One hot encode data
     one_hot_encoded_training_data = pd.get_dummies(training_data, dtype=int)
     one_hot_encoded_validation_data = pd.get_dummies(validation_data, dtype=int)
-    training_data, validation_data = one_hot_encoded_training_data.align(one_hot_encoded_validation_data,
-                                                                         join='right', axis=1)
+    training_data, validation_data = one_hot_encoded_training_data.align(one_hot_encoded_validation_data,join='right', axis=1)
 
     # Remove empty columns
     training_data, rm_columns = remove_empty_columns(training_data)
@@ -199,10 +200,10 @@ def data_preprocessing(training_data, validation_data):
     validation_data = validation_data.drop(["TARGET"], axis=1)
 
     # Save for PCA analysis
-    x_pca = training_data
+    x_pca =(training_data.iloc[:, 1:])
 
-    x_train = np.array(training_data.iloc[:, 1:])
-    x_validation = np.array(validation_data.iloc[:, 1:])
+    x_train = (training_data.iloc[:, 1:])
+    x_validation = (validation_data.iloc[:, 1:])
 
     # PCA
     print("\t---PCA---")
