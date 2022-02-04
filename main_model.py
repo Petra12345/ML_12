@@ -76,6 +76,8 @@ print(metrics.accuracy_score(y_test, y_predictions))
 # Feature analysis
 PCA_analysis = interpret_PCA(pca_func, x_pca)
 PCA_analysis.to_csv("PCA_analysis.csv")
+LR_analysis = interpret_logreg(logistic_reg)
+LR_analysis.to_csv("LR_analysis.csv")
 DT_analysis = interpret_tree(decision_tree, x_test)
 DT_analysis.to_csv("DT_analysis.csv")
 RF_analysis = interpret_tree(random_forest, x_test)
