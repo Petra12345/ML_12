@@ -73,7 +73,7 @@ for train_i, val_i in kf.split(training_data_raw):
     print(f"Time taken for {iter}-th cross validation for all models: " + str(time.time() - start_fold) + " sec.\n")
 print("Time taken for cross validation for all models: " + str(time.time() - start) + " sec.")
 
-df.to_csv("dataframe_cross_validation_dectree_depth.csv")
+df.to_csv("dataframe_cross_validation_dectree_depth_POGING2_GRIDSEARCH1.csv")
 
 columns = ["Method", "F1-score validation", "F1-score training", "Loss validation", "Loss training",
            "Accuracy validation", "Accuracy training", "Precision", "Recall", "TP", "FP", "FN", "TN"]
@@ -106,4 +106,4 @@ for model in models_dict:
         "TN": av_tn
     }, ignore_index=True)
 
-av_data.to_csv("average_dataframe_cross_validation_dectree_depth.csv")
+av_data.to_csv("average_dataframe_cross_validation_dectree_depth_POGING2_GRIDSEARCH1.csv")

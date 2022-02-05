@@ -111,7 +111,7 @@ def make_average_sheet(models_dict, df):
         av_tn = df.loc[df['Method'] == model]["TN"].mean()
         av_data = add_metrics_to_df_average(av_data, model, av_precision, av_recall, av_f1, av_tp, av_fn, av_fp, av_tn)
 
-    av_data.to_csv("average_dataframe_cross_validation.csv")
+    av_data.to_csv("average_dataframe_cross_validation_POGING2_GRIDSEARCH2B_RF.csv")
 
 
 def cross_validation(data_raw, models_dict, k=2):
@@ -136,7 +136,7 @@ def cross_validation(data_raw, models_dict, k=2):
         training_data, validation_data = data_raw.copy().iloc[train_i,], data_raw.copy().iloc[val_i,]
 
         print("\t---Data preprocessing---")
-        x_train, y_train, x_validation, y_validation = data_preprocessing(training_data, validation_data)
+        x_train, y_train, x_validation, y_validation, _, _ = data_preprocessing(training_data, validation_data)
 
         for key, model in models_dict.items():
             print(f"\t\t---perform {key}...---")
@@ -153,4 +153,4 @@ def cross_validation(data_raw, models_dict, k=2):
     print("Time taken for cross validation for all models: " + str(time.time() - start) + " sec.")
 
     make_average_sheet(models_dict, df)
-    df.to_csv("dataframe_cross_validation.csv")
+    df.to_csv("dataframe_cross_validation_POGING2_GRISEARCH2B_RF.csv")
