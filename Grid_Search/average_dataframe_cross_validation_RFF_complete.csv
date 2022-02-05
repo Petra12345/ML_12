@@ -1,0 +1,15 @@
+,Method,TP,FP,FN,TN,Precision,Recall,F1-score
+4,randfor: n_estimators=100 max_depth=15 min_samples_split=16,2301.6,11791.2,2174.4,39084.6,0.163282613,0.514171798,0.247846674
+5,randfor: n_estimators=100 max_depth=20 min_samples_split=2,1878,8811.4,2598,42064.4,0.175649087,0.419527557,0.247606767
+5,randfor: n_estimators=100 max_depth=20 min_samples_split=16,1899.8,8974.4,2576.2,41901.4,0.174687258,0.424389245,0.247483374
+4,randfor: n_estimators=100 max_depth=15 min_samples_split=2,2283.2,11715,2192.8,39160.8,0.163082224,0.510056139,0.247134396
+6,randfor: n_estimators=100 max_depth=25 min_samples_split=16,1597.4,7069,2878.6,43806.8,0.184333472,0.356858254,0.243075655
+6,randfor: n_estimators=100 max_depth=25 min_samples_split=2,1553.4,6858.6,2922.6,44017.2,0.184663514,0.347028536,0.241044192
+3,randfor: n_estimators=100 max_depth=10 min_samples_split=2,2618.2,14836.8,1857.8,36039,0.149985857,0.58492648,0.238741033
+3,randfor: n_estimators=100 max_depth=10 min_samples_split=16,2618.2,14906.2,1857.8,35969.6,0.149394915,0.584914048,0.237987561
+2,randfor: n_estimators=100 max_depth=8 min_samples_split=2,2703.2,15893,1772.8,34982.8,0.145356816,0.603889962,0.234300353
+2,randfor: n_estimators=100 max_depth=8 min_samples_split=16,2695.6,15842.6,1780.4,35033.2,0.145395714,0.602202348,0.234228691
+1,randfor: n_estimators=100 max_depth=5 min_samples_split=2,2773,17185.6,1703,33690.2,0.13892369,0.61947767,0.226940188
+1,randfor: n_estimators=100 max_depth=5 min_samples_split=16,2775.2,17218.8,1700.8,33657,0.138785809,0.619970165,0.22679031
+0,randfor: n_estimators=100 max_depth=3 min_samples_split=2,2811.8,18694.8,1664.2,32181,0.130726365,0.628147731,0.216404107
+0,randfor: n_estimators=100 max_depth=3 min_samples_split=16,2812.4,18703.4,1663.6,32172.4,0.130701923,0.628296996,0.216379189
