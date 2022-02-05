@@ -13,6 +13,8 @@ training_data_raw, testing_data_raw = train_test_split(df, test_size=0.1, random
 k_fold = 5
 
 # Parameters
+name_save = "dataframe_cross_validation_ranfor.csv"
+name_save_average = "average_dataframe_cross_validation_ranfor.csv"
 n_estimators = [50, 100]
 max_depth = [3, 5, 8, 10, 15, 20, 25]
 min_samples_split = [16]
@@ -66,7 +68,7 @@ for train_i, val_i in kf.split(training_data_raw):
     print(f"Time taken for {iter}-th cross validation for all models: " + str(time.time() - start_fold) + " sec.\n")
 print("Time taken for cross validation for all models: " + str(time.time() - start) + " sec.")
 
-df.to_csv("dataframe_cross_validation.csv")
+df.to_csv(name_save)
 
 av_data = pd.DataFrame(columns=["Method", "TP", "FP", "FN", "TN",
                                 "Precision", "Recall", "F1-score"])
@@ -91,4 +93,4 @@ for model in models_dict:
         "TN": av_tn
     }, ignore_index=True)
 
-av_data.to_csv("average_dataframe_cross_validation.csv")
+av_data.to_csv(name_save_average)

@@ -12,6 +12,9 @@ df = load_data()
 training_data_raw, testing_data_raw = train_test_split(df, test_size=0.1, random_state=0)
 k_fold = 5
 
+# Parameters
+name_save = "dataframe_cross_validation_dectree.csv"
+name_save_average = "average_dataframe_cross_validation_dectree.csv"
 criteria = ["gini", "entropy"]
 splitters = ["random", "best"]
 max_depth = [20, 60, 80, 100]
@@ -74,7 +77,7 @@ for train_i, val_i in kf.split(training_data_raw):
     print(f"Time taken for {iter}-th cross validation for all models: " + str(time.time() - start_fold) + " sec.\n")
 print("Time taken for cross validation for all models: " + str(time.time() - start) + " sec.")
 
-df.to_csv("dataframe_cross_validation_dectree_depth_POGING2_GRIDSEARCH1.csv")
+df.to_csv(name_save)
 
 columns = ["Method", "F1-score validation", "F1-score training", "Loss validation", "Loss training",
            "Accuracy validation", "Accuracy training", "Precision", "Recall", "TP", "FP", "FN", "TN"]
@@ -106,4 +109,4 @@ for model in models_dict:
         "TN": av_tn
     }, ignore_index=True)
 
-av_data.to_csv("average_dataframe_cross_validation_dectree_depth_POGING2_GRIDSEARCH1.csv")
+av_data.to_csv(name_save_average)
