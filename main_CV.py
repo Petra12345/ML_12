@@ -21,7 +21,7 @@ models_dict = {}
 #         models_dict[f"dectree: criterion={criterion} and splitter={splitter}"] = make_decision_tree_model(criterion, splitter)
 
 # Random Forest
-for n_estimators, max_depth, min_samples_split in itertools.product([100], [3, 5, 8, 10, 15, 20, 25], [2]):
+for n_estimators, max_depth, min_samples_split in itertools.product([100], [3, 5, 8, 10, 15, 20, 25], [16]):
     random_state = 0
     models_dict[
         f"randfor: n_estimators={n_estimators} max_depth={max_depth} min_samples_split={min_samples_split}"] = make_random_forest_model(

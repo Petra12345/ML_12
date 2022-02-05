@@ -12,17 +12,17 @@ df = load_data()
 training_data_raw, testing_data_raw = train_test_split(df, test_size=0.1, random_state=0)
 k_fold = 5
 
-criteria = ["gini"]
-splitters = ["best"]
-max_depth = [1, 2, 3]
-min_samples_split = [2]
+criteria = ["gini", "entropy"]
+splitters = ["random", "best"]
+max_depth = [20, 60, 80, 100]
+min_samples_split = [2, 4, 8, 16]
 
 models = [item for item in itertools.product(criteria, splitters, max_depth, min_samples_split)]
 
 # Cross-validation
 models_dict = {}
 for criterion, splitter, max_depth, min_samples_split in models:
-    models_dict[f"decision tree: criterion={criterion} splitter={splitter} max depth={max_depth} min split={min_samples_split}"] \
+    models_dict[f"decision tree: criterion={criterion} splitter={splitter} max_depth={max_depth} min_samples_split={min_samples_split}"] \
         = make_decision_tree_model(criterion=criterion, splitter=splitter, max_depth=max_depth, min_samples_split=min_samples_split)
 
 
