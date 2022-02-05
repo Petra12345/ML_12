@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 
-#%%
+# %%
 # LOGISTIC REGRESSION
 df = pd.read_csv("Grid_Search/dataframe_cross_validation_logreg_all.csv", index_col=0)
 
@@ -47,7 +47,7 @@ plt.subplots_adjust(bottom=0.15, right=0.95)
 plt.savefig("logreg_fscore.pdf")
 plt.show()
 
-#%%
+# %%
 # Loss plot
 plt.plot(df_means["Alpha"], df_means["Loss training"], linestyle="--",
          marker="o")
@@ -69,7 +69,7 @@ plt.subplots_adjust(bottom=0.15, right=0.95)
 plt.savefig("logreg_loss.pdf")
 plt.show()
 
-#%%
+# %%
 # Accuracy
 plt.plot(df_means["Alpha"], df_means["Accuracy training"], linestyle="--",
          marker="o")
@@ -90,4 +90,3 @@ plt.subplots_adjust(bottom=0.15, right=0.95)
 
 plt.savefig("logreg_accuracy.pdf")
 plt.show()
-
