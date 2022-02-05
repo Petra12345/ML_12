@@ -49,6 +49,12 @@ def normalize_data(df):
 
 
 def normalize_test_data(df, dictionary):
+    """
+    Given a dictionary and data to normalize, normalize the data according to this dictionary.
+    :param df:          The data to be normalized.
+    :param dictionary:  Dictionary where the minimum and the maximum values should be stored for all columns in the data.
+    :return:            Return dataframe with the columns normalized.
+    """
     for key in dictionary:
         x_max = dictionary[key]["max"]
         x_min = dictionary[key]["min"]
@@ -72,7 +78,10 @@ def make_dataframe_MICE(df, fill_in):
 
 
 def get_stats_Nans_df(df):
-    # pd.set_option('display.max_columns', None)
+    """
+    Obtain statistics of the missing values in a dataframe.
+    :param df:  The dataframe
+    """
     print(f"Number of columns: {len(df.columns)}")
     print(f"Number of rows: {len(df)}")
     for column in df.columns:
@@ -82,6 +91,11 @@ def get_stats_Nans_df(df):
 
 
 def remove_empty_columns(df):
+    """
+    Method to remove columns where there are only missing values.
+    :param df:  The dataframe
+    :return:    The dataframe with the columns removed and a list of columns which have been removed.
+    """
     num_rows = len(df)
     list_cols = df.columns[df.isnull().sum() == num_rows].tolist()
     print(f"Removing the following empty columns: {list_cols}")
@@ -169,12 +183,23 @@ def perform_pca(x, k=0.9):
 
 
 def data_preprocessing(training_data, validation_data):
+    """
+    Our data preprocessing process. First, the training data is one-hot-encoded. Then, empty columns (with only missing
+        values) are removed. Then we apply MICE to fill in the missing values. Then, we remove all constant columns,
+        since these do not add any information. After that, we normalize the data, extract the target data and,
+        consequently, we perform PCA.
+    :param training_data:
+    :param validation_data:
+    :return:
+    """
     training_data = training_data.drop(["SK_ID_CURR"], axis=1)  # remove ID
     validation_data = validation_data.drop(["SK_ID_CURR"], axis=1)  # remove ID
+
     # One hot encode data
     one_hot_encoded_training_data = pd.get_dummies(training_data, dtype=int)
     one_hot_encoded_validation_data = pd.get_dummies(validation_data, dtype=int)
-    training_data, validation_data = one_hot_encoded_training_data.align(one_hot_encoded_validation_data,join='right', axis=1)
+    training_data, validation_data = one_hot_encoded_training_data.align(one_hot_encoded_validation_data, join='right',
+                                                                         axis=1)
 
     # Remove empty columns
     training_data, rm_columns = remove_empty_columns(training_data)
@@ -195,15 +220,12 @@ def data_preprocessing(training_data, validation_data):
 
     # Extract target data
     y_train = np.array(training_data["TARGET"])
-    training_data = training_data.drop(["TARGET"], axis=1)
+    x_train = training_data.drop(["TARGET"], axis=1)
     y_validation = np.array(validation_data["TARGET"])
-    validation_data = validation_data.drop(["TARGET"], axis=1)
+    x_validation = validation_data.drop(["TARGET"], axis=1)
 
     # Save for PCA analysis
-    x_pca =(training_data.iloc[:, 1:])
-
-    x_train = (training_data.iloc[:, 1:])
-    x_validation = (validation_data.iloc[:, 1:])
+    x_pca = x_train.copy()
 
     # PCA
     print("\t---PCA---")
@@ -215,14 +237,3 @@ def data_preprocessing(training_data, validation_data):
     x_smote, y_smote = smote.fit_resample(x_train, y_train)
 
     return x_smote, y_smote, x_validation, y_validation, pca_func, x_pca
-
-# def replace_nans_with_mode(df):
-#     for column in df:
-#         print("Replace " + str(df[column].isnull().sum()) + " nans for " + column, end="\n")
-#         if df[column].dtype == float:
-#             df[column] = df[column].fillna(df[column].median())
-#         else:
-#             df[column] = df[column].fillna(df[column].mode().iloc[0])
-#
-#     # df.fillna(df.mode().iloc[0])
-#     return df

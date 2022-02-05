@@ -12,6 +12,7 @@ df = load_data()
 training_data_raw, testing_data_raw = train_test_split(df, test_size=0.1, random_state=0)
 k_fold = 5
 
+# Parameters
 regularizers = ["l2"]
 solvers = ["saga"]
 lambdas = [1e-14, 0.000001, 0.00001, 0.0001, 0.001, 0.01, 0.1, 1, 10, 100, 1000, 10000, 1e14]
@@ -111,4 +112,3 @@ for model in models_dict:
     }, ignore_index=True)
 
 av_data.to_csv("average_dataframe_cross_validation_logreg_all.csv")
-
