@@ -9,7 +9,7 @@ from Functions.preprocessing_funcs import *
 # Load data and some initial data processing
 print("---Load data---")
 df = load_data()
-training_data_raw, testing_data_raw = train_test_split(df, test_size=0.1, random_state=0)
+training_data_raw, testing_data_raw = train_test_split(df, test_size=0.1, random_state=42)
 k_fold = 5
 
 # Parameters
