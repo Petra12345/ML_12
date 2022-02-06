@@ -48,10 +48,10 @@ print(metrics.recall_score(y_test, y_predictions))
 print(metrics.accuracy_score(y_test, y_predictions))
 
 cm_logreg = metrics.plot_confusion_matrix(logistic_reg, x_test, y_test, include_values=False)
-plt.text(-0.22, 0.04, "19409", fontsize=16, color='black')  # TODO add correct values
-plt.text(0.85, 1.04, "1618", fontsize=16, color='yellow')  # TODO add correct values
-plt.text(-0.18, 1.04, "827", fontsize=16, color='yellow')  # TODO add correct values
-plt.text(0.85, 0.04, "8898", fontsize=16, color='black')  # TODO add correct values
+plt.text(-0.22, 0.04, "19403", fontsize=16, color='black')  # TODO add correct values
+plt.text(0.85, 1.04, "1616", fontsize=16, color='yellow')  # TODO add correct values
+plt.text(-0.18, 1.04, "829", fontsize=16, color='yellow')  # TODO add correct values
+plt.text(0.85, 0.04, "8904", fontsize=16, color='black')  # TODO add correct values
 axes = plt.gca()
 axes.yaxis.label.set_size(16)
 plt.yticks(fontsize=14)
@@ -72,10 +72,10 @@ print(metrics.precision_score(y_test, y_predictions))
 print(metrics.recall_score(y_test, y_predictions))
 print(metrics.accuracy_score(y_test, y_predictions))
 cm_dectree = metrics.plot_confusion_matrix(decision_tree, x_test, y_test, include_values=False)
-plt.text(-0.22, 0.04, "17495", fontsize=16, color='black')  # TODO add correct values
-plt.text(0.85, 1.04, "1576", fontsize=16, color='yellow')  # TODO add correct values
-plt.text(-0.18, 1.04, "869", fontsize=16, color='yellow')  # TODO add correct values
-plt.text(0.85, 0.04, "10812", fontsize=16, color='black')  # TODO add correct values
+plt.text(-0.22, 0.04, "17873", fontsize=16, color='black')  # TODO add correct values
+plt.text(0.85, 1.04, "1494", fontsize=16, color='yellow')  # TODO add correct values
+plt.text(-0.18, 1.04, "951", fontsize=16, color='yellow')  # TODO add correct values
+plt.text(0.85, 0.04, "10434", fontsize=16, color='black')  # TODO add correct values
 axes = plt.gca()
 axes.yaxis.label.set_size(16)
 plt.yticks(fontsize=14)
@@ -94,10 +94,10 @@ print(metrics.precision_score(y_test, y_predictions))
 print(metrics.recall_score(y_test, y_predictions))
 print(metrics.accuracy_score(y_test, y_predictions))
 cm_ranfor = metrics.plot_confusion_matrix(random_forest, x_test, y_test, include_values=False)
-plt.text(-0.22, 0.04, "23154", fontsize=16, color='black')  # TODO add correct values
-plt.text(0.85, 1.04, "1063", fontsize=16, color='yellow')  # TODO add correct values
-plt.text(-0.18, 1.04, "1382", fontsize=16, color='yellow')  # TODO add correct values
-plt.text(0.85, 0.04, "5153", fontsize=16, color='yellow')  # TODO add correct values
+plt.text(-0.22, 0.04, "21469", fontsize=16, color='black')  # TODO add correct values
+plt.text(0.85, 1.04, "1304", fontsize=16, color='yellow')  # TODO add correct values
+plt.text(-0.18, 1.04, "1141", fontsize=16, color='yellow')  # TODO add correct values
+plt.text(0.85, 0.04, "6838", fontsize=16, color='yellow')  # TODO add correct values
 axes = plt.gca()
 axes.yaxis.label.set_size(16)
 plt.yticks(fontsize=14)
