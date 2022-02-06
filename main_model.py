@@ -7,11 +7,12 @@ from Functions.preprocessing_funcs import *
 
 # Settings
 dectree_criterion = "gini"
-dectree_splitter = "best"
+dectree_splitter = "random"
 dectree_max_depth = 10
+dectree_min_samples_split = 4
 ranfor_n_estimators = 100
-ranfor_max_depth = 20
-ranfor_min_samples_split = 2
+ranfor_max_depth = 15
+ranfor_min_samples_split = 16
 logreg_solver = "saga"
 logreg_C = 0.1
 logreg_penalty = "l2"
@@ -25,7 +26,7 @@ x_train, y_train, x_test, y_test, pca_func, x_pca = data_preprocessing(training_
 
 # Make models
 decision_tree = make_decision_tree_model(criterion=dectree_criterion, splitter=dectree_splitter,
-                                         max_depth=dectree_max_depth)
+                                         max_depth=dectree_max_depth, min_samples_split=dectree_min_samples_split)
 random_forest = make_random_forest_model(n_estimators=ranfor_n_estimators, max_depth=ranfor_max_depth,
                                          min_samples_split=ranfor_min_samples_split)
 logistic_reg = make_lin_model(solver=logreg_solver, C=logreg_C, penalty=logreg_penalty)
